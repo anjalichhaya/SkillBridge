@@ -30,7 +30,7 @@ app.use(morgan("dev")) // logs: GET /api/users 200 12ms
 
 app.use(cors({
     origin: process.env.NODE_ENV === "development"
-        ? "http://127.0.0.1:5500" // VS Code Live Server default
+        ? "https://skillbridge-india26.netlify.app" // VS Code Live Server default
         : process.env.FRONTEND_URL,
     credentials: true // allow cookies to be sent cross-origin
 }))
