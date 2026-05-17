@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Course — SkillBridge India</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --saffron:#FF6B00;--saffron-bg:#FFF3EA;
+  --navy:#0D1B3E;--navy-2:#1A2F5E;--navy-bg:#EEF2FA;
+  --green:#138808;--green-bg:#EAF6EA;
+  --gold:#E8930A;--gold-bg:#FEF6E4;
+  --red:#DC2626;--red-bg:#FEF2F2;
+  --bg:#F0F3FA;--card:#fff;--border:#E4E9F2;
+  --text:#0D1B3E;--text-2:#5A6A85;--text-3:#9AAABB;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 1px 3px rgba(13,27,62,0.06),0 4px 16px rgba(13,27,62,0.04);
+}
+html,body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+
+/* ── Header ── */
+.course-header{background:var(--navy);padding:0;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,0.08)}
+.header-inner{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(255,255,255,0.6);cursor:pointer;text-decoration:none;transition:color 0.15s;flex-shrink:0}
+.back-btn:hover{color:#fff}
+.header-course-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.header-progress{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.header-progress-bar{width:120px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;overflow:hidden}
+.header-progress-fill{height:100%;background:linear-gradient(90deg,var(--saffron),var(--gold));border-radius:2px;transition:width 0.5s ease}
+.header-progress-text{font-size:12px;font-weight:600;color:var(--saffron);white-space:nowrap}
+
+/* ── Layout ── */
+.page-layout{max-width:1200px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+
+/* ── Video/Content area ── */
+.video-placeholder{
+  background:linear-gradient(135deg,var(--navy),var(--navy-2));
+  border-radius:var(--radius);aspect-ratio:16/9;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;margin-bottom:16px;cursor:pointer;
+}
+.video-placeholder:hover .play-btn{transform:scale(1.1)}
+.vp-bg{position:absolute;inset:0;opacity:0.05;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:20px 20px}
+.play-btn{width:64px;height:64px;border-radius:50%;background:rgba(255,107,0,0.9);display:flex;align-items:center;justify-content:center;transition:transform 0.2s;position:relative;z-index:1}
+.play-btn svg{margin-left:4px}
+.lesson-title-display{font-size:16px;font-weight:600;color:rgba(255,255,255,0.9);margin-top:14px;position:relative;z-index:1;text-align:center;padding:0 20px}
+.lesson-sub-display{font-size:12px;color:rgba(255,255,255,0.4);margin-top:6px;position:relative;z-index:1}
+
+.lesson-info{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.lesson-info-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px}
+.lesson-desc{font-size:13px;color:var(--text-2);line-height:1.65;margin-bottom:16px}
+.lesson-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn-complete{padding:10px 22px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;transition:all 0.2s}
+.btn-complete:hover{background:#0f6b07;transform:translateY(-1px)}
+.btn-complete.done{background:var(--navy-bg);color:var(--navy-2);cursor:default;transform:none}
+.btn-complete.done:hover{background:var(--navy-bg);transform:none}
+.btn-next{padding:10px 22px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;transition:all 0.2s}
+.btn-next:hover{background:var(--saffron-bg);color:var(--saffron)}
+
+/* ── Sidebar ── */
+.sidebar-area{}
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.card-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:600;color:var(--text)}
+.card-sub{font-size:11px;color:var(--text-3)}
+
+/* ── Lesson list ── */
+.lesson-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:12px 18px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background 0.15s;
+}
+.lesson-item:last-child{border-bottom:none}
+.lesson-item:hover{background:var(--bg)}
+.lesson-item.active{background:var(--saffron-bg);border-left:3px solid var(--saffron)}
+.lesson-item.completed .lesson-num{background:var(--green);color:#fff}
+.lesson-num{
+  width:24px;height:24px;border-radius:50%;background:var(--bg);
+  border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:var(--text-3);flex-shrink:0;margin-top:1px;
+  transition:all 0.2s;
+}
+.lesson-item.active .lesson-num{background:var(--saffron);color:#fff;border-color:var(--saffron)}
+.lesson-content{flex:1;min-width:0}
+.lesson-name{font-size:12px;font-weight:500;color:var(--text);line-height:1.35}
+.lesson-meta{font-size:10px;color:var(--text-3);margin-top:2px;display:flex;align-items:center;gap:6px}
+.free-badge{background:var(--green-bg);color:var(--green);font-size:9px;font-weight:600;padding:1px 6px;border-radius:6px}
+.locked-icon{color:var(--text-3)}
+
+/* ── Progress card ── */
+.progress-ring-wrap{text-align:center;padding:20px}
+.progress-ring{transform:rotate(-90deg)}
+.progress-ring-bg{fill:none;stroke:var(--border);stroke-width:8}
+.progress-ring-fill{fill:none;stroke:var(--saffron);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 0.8s ease}
+.progress-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.progress-pct{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text)}
+.progress-lbl{font-size:10px;color:var(--text-3)}
+
+/* ── Certificate card ── */
+.cert-unlock{padding:18px;text-align:center}
+.cert-unlock-icon{font-size:36px;margin-bottom:10px}
+.cert-unlock-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px}
+.cert-unlock-sub{font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:14px}
+.btn-cert{width:100%;padding:11px;background:linear-gradient(135deg,var(--gold),var(--saffron));color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.btn-cert:hover{opacity:0.9;transform:translateY(-1px)}
+.btn-cert:disabled{background:var(--border);color:var(--text-3);cursor:not-allowed;transform:none}
+
+/* ── Course info ── */
+.course-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.meta-item{padding:12px 18px;border-bottom:1px solid var(--border);border-right:1px solid var(--border)}
+.meta-item:nth-child(2n){border-right:none}
+.meta-item:nth-last-child(-n+2){border-bottom:none}
+.meta-label{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px}
+.meta-value{font-size:13px;font-weight:600;color:var(--text)}
+
+/* ── Loading ── */
+.loading-overlay{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.4s}
+.loading-logo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff;margin-bottom:8px}
+.loading-logo span{color:var(--saffron)}
+.loading-bar-wrap{width:180px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;margin-top:20px}
+.loading-bar-fill{height:100%;background:var(--saffron);border-radius:2px;animation:loadFill 1s ease forwards}
+@keyframes loadFill{from{width:0}to{width:100%}}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,0.2);transform:translateY(80px);opacity:0;transition:all 0.3s}
+.toast.show{transform:translateY(0);opacity:1}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loader">
+  <div class="loading-logo">Skill<span>Bridge</span></div>
+  <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:6px">Loading course...</div>
+  <div class="loading-bar-wrap"><div class="loading-bar-fill"></div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Header -->
+<div class="course-header">
+  <div class="header-inner">
+    <a class="back-btn" href="student-dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back
+    </a>
+    <div class="header-course-title" id="header-title">Loading...</div>
+    <div class="header-progress">
+      <div class="header-progress-bar"><div class="header-progress-fill" id="header-progress-fill" style="width:0%"></div></div>
+      <div class="header-progress-text" id="header-progress-text">0%</div>
+    </div>
+  </div>
+</div>
+
+<div class="page-layout">
+  <!-- Main -->
+  <div class="main-area">
+    <!-- Video placeholder -->
+    <div class="video-placeholder" id="video-area" onclick="handleVideoClick()">
+      <div class="vp-bg"></div>
+      <div class="play-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </div>
+      <div class="lesson-title-display" id="video-title">Select a lesson to start</div>
+      <div class="lesson-sub-display" id="video-sub">Click any lesson from the right panel</div>
+    </div>
+
+    <!-- Lesson Info -->
+    <div class="lesson-info">
+      <div class="lesson-info-title" id="lesson-title">Select a lesson</div>
+      <div class="lesson-desc" id="lesson-desc">Choose a lesson from the curriculum on the right to begin learning.</div>
+      <div class="lesson-actions">
+        <button class="btn-complete" id="btn-complete" onclick="markComplete()" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Mark as complete
+        </button>
+        <button class="btn-next" id="btn-next" onclick="nextLesson()" style="display:none">
+          Next lesson
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar-area">
+    <!-- Progress -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Your progress</div>
+        <div class="card-sub" id="progress-fraction">0 / 0 lessons</div>
+      </div>
+      <div class="progress-ring-wrap" style="position:relative">
+        <svg class="progress-ring" width="100" height="100" viewBox="0 0 100 100">
+          <circle class="progress-ring-bg" cx="50" cy="50" r="42"/>
+          <circle class="progress-ring-fill" id="progress-ring-fill" cx="50" cy="50" r="42"
+            stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
+        </svg>
+        <div class="progress-center">
+          <div class="progress-pct" id="progress-pct">0%</div>
+          <div class="progress-lbl">complete</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificate -->
+    <div class="card" id="cert-card">
+      <div class="cert-unlock">
+        <div class="cert-unlock-icon" id="cert-icon">🔒</div>
+        <div class="cert-unlock-title" id="cert-title">Certificate locked</div>
+        <div class="cert-unlock-sub" id="cert-sub">Complete all lessons to unlock your SkillBridge certificate.</div>
+        <button class="btn-cert" id="btn-get-cert" onclick="getCertificate()" disabled>Get Certificate</button>
+      </div>
+    </div>
+
+    <!-- Curriculum -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Curriculum</div>
+        <div class="card-sub" id="curriculum-count">0 lessons</div>
+      </div>
+      <div id="lesson-list">
+        <div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3)">Loading lessons...</div>
+      </div>
+    </div>
+
+    <!-- Course info -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">Course info</div></div>
+      <div class="course-meta-grid" id="course-meta-grid">
+        <div class="meta-item"><div class="meta-label">Category</div><div class="meta-value" id="mi-cat">—</div></div>
+        <div class="meta-item"><div class="meta-label">Level</div><div class="meta-value" id="mi-level">—</div></div>
+        <div class="meta-item"><div class="meta-label">Language</div><div class="meta-value" id="mi-lang">—</div></div>
+        <div class="meta-item"><div class="meta-label">Enrolled</div><div class="meta-value" id="mi-enroll">—</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api'
+const getToken = () => localStorage.getItem('token')
+const getUser = () => JSON.parse(localStorage.getItem('user') || '{}')
+
+// Get course ID from URL: ?id=xxx
+const urlParams = new URLSearchParams(window.location.search)
+const courseId = urlParams.get('id')
+
+let courseData = null
+let enrollmentData = null
+let currentLessonIdx = 0
+let completedLessons = []
+
+// ── Toast ──────────────────────────────────────────────────
+const showToast = (msg, color='var(--saffron)') => {
+  const t = document.getElementById('toast')
+  t.innerHTML = msg; t.style.borderLeft = `3px solid ${color}`
+  t.classList.add('show')
+  setTimeout(() => t.classList.remove('show'), 3000)
+}
+
+// ── Fetch helpers ──────────────────────────────────────────
+const apiFetch = async (url, opts={}) => {
+  const res = await fetch(API + url, {
+    headers: { 'Content-Type':'application/json', Authorization: 'Bearer ' + getToken() },
+    credentials: 'include', ...opts
+  })
+  return res.json()
+}
+
+// ── Update progress UI ─────────────────────────────────────
+const updateProgressUI = () => {
+  const total = courseData?.lessons?.length || 0
+  const done = completedLessons.length
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0
+
+  // Header bar
+  document.getElementById('header-progress-fill').style.width = pct + '%'
+  document.getElementById('header-progress-text').textContent = pct + '%'
+
+  // Ring
+  const circumference = 263.9
+  const offset = circumference - (pct / 100) * circumference
+  document.getElementById('progress-ring-fill').style.strokeDashoffset = offset
+  document.getElementById('progress-pct').textContent = pct + '%'
+  document.getElementById('progress-fraction').textContent = `${done} / ${total} lessons`
+
+  // Certificate unlock
+  if(pct === 100) {
+    document.getElementById('cert-icon').textContent = '🎓'
+    document.getElementById('cert-title').textContent = 'Certificate unlocked!'
+    document.getElementById('cert-sub').textContent = 'Congratulations! You completed the course. Download your certificate.'
+    document.getElementById('btn-get-cert').disabled = false
+    document.getElementById('btn-get-cert').style.background = 'linear-gradient(135deg,var(--gold),var(--saffron))'
+  }
+}
+
+// ── Render lesson list ─────────────────────────────────────
+const renderLessons = () => {
+  const lessons = courseData?.lessons || []
+  document.getElementById('curriculum-count').textContent = lessons.length + ' lessons'
+
+  if(!lessons.length) {
+    document.getElementById('lesson-list').innerHTML = `
+      <div style="padding:20px;text-align:center">
+        <div style="font-size:32px;margin-bottom:10px">📝</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">No lessons yet</div>
+        <div style="font-size:12px;color:var(--text-3)">The instructor hasn't added lessons yet. Check back soon!</div>
+      </div>`
+    return
+  }
+
+  document.getElementById('lesson-list').innerHTML = lessons.map((lesson, i) => {
+    const isCompleted = completedLessons.includes(lesson._id)
+    const isActive = i === currentLessonIdx
+    return `
+      <div class="lesson-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}"
+        onclick="selectLesson(${i})" id="lesson-item-${i}">
+        <div class="lesson-num">
+          ${isCompleted
+            ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`
+            : i + 1}
+        </div>
+        <div class="lesson-content">
+          <div class="lesson-name">${lesson.title}</div>
+          <div class="lesson-meta">
+            ${lesson.video?.duration ? `<span>${lesson.video.duration} min</span>` : '<span>Video lesson</span>'}
+            ${lesson.isFree ? '<span class="free-badge">Free</span>' : ''}
+            ${isCompleted ? '<span style="color:var(--green);font-weight:600">✓ Done</span>' : ''}
+          </div>
+        </div>
+      </div>`
+  }).join('')
+}
+
+// ── Select lesson ──────────────────────────────────────────
+const selectLesson = (idx) => {
+  if(!courseData?.lessons?.length) return
+  currentLessonIdx = idx
+  const lesson = courseData.lessons[idx]
+  const isCompleted = completedLessons.includes(lesson._id)
+
+  // Update video area
+  document.getElementById('video-title').textContent = lesson.title
+  document.getElementById('video-sub').textContent = lesson.description || 'Click play to start this lesson'
+
+  // Update lesson info
+  document.getElementById('lesson-title').textContent = lesson.title
+  document.getElementById('lesson-desc').textContent = lesson.description || 'Watch the video above to learn this topic.'
+
+  // Mark complete button
+  const btn = document.getElementById('btn-complete')
+  btn.disabled = false
+  if(isCompleted) {
+    btn.classList.add('done')
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Completed`
+  } else {
+    btn.classList.remove('done')
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Mark as complete`
+  }
+
+  // Next button
+  const nextBtn = document.getElementById('btn-next')
+  nextBtn.style.display = idx < courseData.lessons.length - 1 ? 'flex' : 'none'
+
+  // Update active state in list
+  renderLessons()
+  window.scrollTo({top: 0, behavior: 'smooth'})
+}
+
+// ── Mark complete ──────────────────────────────────────────
+const markComplete = async () => {
+  if(!courseData?.lessons?.length) return
+  const lesson = courseData.lessons[currentLessonIdx]
+  const isCompleted = completedLessons.includes(lesson._id)
+  if(isCompleted) return
+
+  const btn = document.getElementById('btn-complete')
+  btn.disabled = true
+  btn.textContent = 'Saving...'
+
+  try {
+    const data = await apiFetch(`/enrollments/${courseId}/lessons/${lesson._id}/complete`, { method: 'PUT' })
+    if(data.success) {
+      completedLessons.push(lesson._id)
+      updateProgressUI()
+      renderLessons()
+      selectLesson(currentLessonIdx)
+      showToast('✅ Lesson marked as complete!', 'var(--green)')
+
+      // Auto-advance to next lesson
+      if(currentLessonIdx < courseData.lessons.length - 1) {
+        setTimeout(() => selectLesson(currentLessonIdx + 1), 800)
+      } else if(completedLessons.length === courseData.lessons.length) {
+        showToast('🎉 Course complete! You can now get your certificate.', 'var(--gold)')
+      }
+    } else {
+      showToast('⚠️ ' + (data.message || 'Failed to save'), 'var(--red)')
+      btn.disabled = false
+    }
+  } catch(err) {
+    showToast('⚠️ Could not connect to server', 'var(--red)')
+    btn.disabled = false
+  }
+}
+
+const nextLesson = () => {
+  if(currentLessonIdx < (courseData?.lessons?.length || 0) - 1) {
+    selectLesson(currentLessonIdx + 1)
+  }
+}
+
+const handleVideoClick = () => {
+  if(!courseData?.lessons?.length) return
+  showToast('▶ Playing: ' + courseData.lessons[currentLessonIdx]?.title, 'var(--saffron)')
+}
+
+// ── Get certificate ────────────────────────────────────────
+const getCertificate = async () => {
+  const btn = document.getElementById('btn-get-cert')
+  btn.textContent = 'Generating...'
+  btn.disabled = true
+
+  try {
+    // Issue certificate via API
+    const data = await apiFetch(`/enrollments/${courseId}/certificate`, { method: 'POST' })
+
+    if(data.success) {
+      const cert = data.certificate
+      showToast('🎓 Certificate issued! Downloading...', 'var(--gold)')
+
+      // Generate and download certificate
+      setTimeout(() => {
+        downloadCertificate({
+          studentName: getUser().name || 'Student',
+          courseName: courseData.title,
+          category: courseData.category,
+          certificateId: cert.certificateId,
+          issuedDate: new Date(cert.issuedAt).toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'}),
+          instructorName: courseData.instructor?.name || 'SkillBridge Instructor',
+          scheme: courseData.skillIndiaScheme !== 'None' ? courseData.skillIndiaScheme : null
+        })
+        btn.textContent = '✓ Downloaded!'
+        btn.style.background = 'var(--green)'
+      }, 500)
+
+    } else {
+      showToast('⚠️ ' + (data.message || 'Could not issue certificate'), 'var(--red)')
+      btn.disabled = false
+      btn.textContent = 'Get Certificate'
+    }
+  } catch(err) {
+    showToast('⚠️ Server error', 'var(--red)')
+    btn.disabled = false
+    btn.textContent = 'Get Certificate'
+  }
+}
+
+// ── Download certificate (Canvas-generated) ───────────────
+const downloadCertificate = ({ studentName, courseName, category, certificateId, issuedDate, instructorName, scheme }) => {
+  const canvas = document.createElement('canvas')
+  canvas.width = 1200
+  canvas.height = 850
+  const ctx = canvas.getContext('2d')
+
+  // ── Background ──
+  const bg = ctx.createLinearGradient(0, 0, 1200, 850)
+  bg.addColorStop(0, '#0D1B3E')
+  bg.addColorStop(0.5, '#1A2F5E')
+  bg.addColorStop(1, '#0D1B3E')
+  ctx.fillStyle = bg
+  ctx.fillRect(0, 0, 1200, 850)
+
+  // ── Decorative circles ──
+  ctx.save()
+  ctx.globalAlpha = 0.04
+  ctx.fillStyle = '#FF6B00'
+  ctx.beginPath(); ctx.arc(1050, 100, 300, 0, Math.PI*2); ctx.fill()
+  ctx.fillStyle = '#F5A623'
+  ctx.beginPath(); ctx.arc(150, 750, 250, 0, Math.PI*2); ctx.fill()
+  ctx.restore()
+
+  // ── Border frame ──
+  ctx.strokeStyle = 'rgba(255,107,0,0.3)'
+  ctx.lineWidth = 2
+  ctx.strokeRect(30, 30, 1140, 790)
+  ctx.strokeStyle = 'rgba(255,107,0,0.15)'
+  ctx.lineWidth = 1
+  ctx.strokeRect(40, 40, 1120, 770)
+
+  // ── Corner ornaments ──
+  const corners = [[50,50],[1150,50],[50,800],[1150,800]]
+  corners.forEach(([x,y]) => {
+    ctx.strokeStyle = '#FF6B00'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    const size = 20
+    if(x < 600 && y < 400){ ctx.moveTo(x,y+size); ctx.lineTo(x,y); ctx.lineTo(x+size,y) }
+    else if(x > 600 && y < 400){ ctx.moveTo(x-size,y); ctx.lineTo(x,y); ctx.lineTo(x,y+size) }
+    else if(x < 600 && y > 400){ ctx.moveTo(x,y-size); ctx.lineTo(x,y); ctx.lineTo(x+size,y) }
+    else{ ctx.moveTo(x-size,y); ctx.lineTo(x,y); ctx.lineTo(x,y-size) }
+    ctx.stroke()
+  })
+
+  // ── Tricolor stripe ──
+  ctx.fillStyle = '#FF6B00'
+  ctx.fillRect(0, 0, 1200, 6)
+  ctx.fillStyle = '#FFFFFF'
+  ctx.fillRect(0, 6, 1200, 2)
+  ctx.fillStyle = '#138808'
+  ctx.fillRect(0, 8, 1200, 6)
+
+  // Bottom tricolor
+  ctx.fillStyle = '#138808'
+  ctx.fillRect(0, 836, 1200, 6)
+  ctx.fillStyle = '#FFFFFF'
+  ctx.fillRect(0, 842, 1200, 2)
+  ctx.fillStyle = '#FF6B00'
+  ctx.fillRect(0, 844, 1200, 6)
+
+  // ── Logo & Brand ──
+  ctx.font = 'bold 28px Syne, sans-serif'
+  ctx.fillStyle = '#FFFFFF'
+  ctx.textAlign = 'center'
+  ctx.fillText('Skill', 578, 100)
+  ctx.fillStyle = '#FF6B00'
+  ctx.fillText('Bridge', 648, 100)
+
+  // Brand underline
+  ctx.fillStyle = 'rgba(255,107,0,0.3)'
+  ctx.fillRect(540, 108, 130, 1)
+
+  // ── "Certificate of Completion" ──
+  ctx.font = '500 14px DM Sans, sans-serif'
+  ctx.fillStyle = 'rgba(255,255,255,0.4)'
+  ctx.textAlign = 'center'
+  ctx.fillText('CERTIFICATE OF COMPLETION', 600, 155)
+
+  // Decorative lines around text
+  ctx.strokeStyle = 'rgba(255,107,0,0.3)'
+  ctx.lineWidth = 1
+  ctx.beginPath(); ctx.moveTo(200, 148); ctx.lineTo(370, 148); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(830, 148); ctx.lineTo(1000, 148); ctx.stroke()
+
+  // ── "This is to certify that" ──
+  ctx.font = '300 18px DM Sans, sans-serif'
+  ctx.fillStyle = 'rgba(255,255,255,0.55)'
+  ctx.fillText('This is to certify that', 600, 220)
+
+  // ── Student Name ──
+  ctx.font = 'bold 56px Syne, sans-serif'
+  ctx.fillStyle = '#FFFFFF'
+  ctx.fillText(studentName, 600, 300)
+
+  // Name underline (gold)
+  const nameWidth = ctx.measureText(studentName).width
+  const grad = ctx.createLinearGradient(600 - nameWidth/2, 0, 600 + nameWidth/2, 0)
+  grad.addColorStop(0, 'transparent')
+  grad.addColorStop(0.3, '#FF6B00')
+  grad.addColorStop(0.7, '#F5A623')
+  grad.addColorStop(1, 'transparent')
+  ctx.strokeStyle = grad
+  ctx.lineWidth = 2
+  ctx.beginPath(); ctx.moveTo(600 - nameWidth/2, 315); ctx.lineTo(600 + nameWidth/2, 315); ctx.stroke()
+
+  // ── "has successfully completed" ──
+  ctx.font = '300 18px DM Sans, sans-serif'
+  ctx.fillStyle = 'rgba(255,255,255,0.55)'
+  ctx.fillText('has successfully completed the course', 600, 375)
+
+  // ── Course name ──
+  ctx.font = 'bold 30px Syne, sans-serif'
+  ctx.fillStyle = '#FF8C33'
+  // Handle long names
+  if(courseName.length > 45) {
+    ctx.font = 'bold 22px Syne, sans-serif'
+  }
+  ctx.fillText(courseName, 600, 435)
+
+  // ── Category ──
+  ctx.font = '500 15px DM Sans, sans-serif'
+  ctx.fillStyle = 'rgba(255,255,255,0.4)'
+  ctx.fillText(category, 600, 468)
+
+  // ── Scheme badge ──
+  if(scheme) {
+    ctx.fillStyle = 'rgba(19,136,8,0.2)'
+    roundRect(ctx, 500, 485, 200, 30, 6)
+    ctx.fill()
+    ctx.strokeStyle = 'rgba(19,136,8,0.4)'; ctx.lineWidth=1
+    roundRect(ctx, 500, 485, 200, 30, 6); ctx.stroke()
+    ctx.font = 'bold 12px DM Sans, sans-serif'
+    ctx.fillStyle = '#4ADE80'
+    ctx.fillText(scheme + ' Certified', 600, 505)
+  }
+
+  // ── Divider line ──
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)'
+  ctx.lineWidth = 1
+  ctx.beginPath(); ctx.moveTo(100, 565); ctx.lineTo(1100, 565); ctx.stroke()
+
+  // ── Signatures section ──
+  const sigY = 640
+
+  // Instructor sig
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)'
+  ctx.lineWidth = 1.5
+  ctx.beginPath(); ctx.moveTo(200, sigY); ctx.lineTo(500, sigY); ctx.stroke()
+  ctx.font = '500 13px DM Sans, sans-serif'
+  ctx.fillStyle = '#FFFFFF'
+  ctx.fillText(instructorName, 350, sigY + 20)
+  ctx.font = '12px DM Sans, sans-serif'
+  ctx.fillStyle = 'rgba(255,255,255,0.35)'
+  ctx.fillText('Course Instructor', 350, sigY + 38)
+
+  // SkillBridge sig
+  ctx.beginPath(); ctx.moveTo(700, sigY); ctx.lineTo(1000, sigY); ctx.stroke()
+  ctx.font = 'bold 14px Syne, sans-serif'
+  ctx.fillStyle = '#FF6B00'
+  ctx.fillText('SkillBridge India', 850, sigY + 20)
+  ctx.font = '12px DM Sans, sans-serif'
+  ctx.fillStyle = 'rgba(255,255,255,0.35)'
+  ctx.fillText('Authorised Signatory', 850, sigY + 38)
+
+  // ── Certificate ID & Date ──
+  ctx.font = '11px DM Sans, monospace'
+  ctx.fillStyle = 'rgba(255,255,255,0.25)'
+  ctx.textAlign = 'left'
+  ctx.fillText(`Certificate ID: ${certificateId}`, 80, 760)
+  ctx.textAlign = 'right'
+  ctx.fillText(`Issued: ${issuedDate}`, 1120, 760)
+
+  // Verify text
+  ctx.textAlign = 'center'
+  ctx.fillStyle = 'rgba(255,255,255,0.18)'
+  ctx.font = '11px DM Sans, sans-serif'
+  ctx.fillText('Verify at: skillbridge.in/verify', 600, 780)
+
+  // ── India flag emoji area ──
+  ctx.font = '22px serif'
+  ctx.textAlign = 'center'
+  ctx.fillText('🇮🇳', 600, 810)
+
+  // ── Download ──
+  const link = document.createElement('a')
+  link.download = `SkillBridge_Certificate_${certificateId}.png`
+  link.href = canvas.toDataURL('image/png', 1.0)
+  link.click()
+}
+
+// Rounded rect helper
+const roundRect = (ctx, x, y, w, h, r) => {
+  ctx.beginPath()
+  ctx.moveTo(x+r, y)
+  ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r)
+  ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h)
+  ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r)
+  ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y)
+  ctx.closePath()
+}
+
+// ── Init ──────────────────────────────────────────────────
+const init = async () => {
+  if(!getToken()) { window.location.href = 'login.html'; return }
+  if(!courseId) { showToast('⚠️ No course ID in URL', 'var(--red)'); return }
+
+  try {
+    // Load course details and enrollment in parallel
+    const [courseRes, enrollRes] = await Promise.all([
+      apiFetch(`/courses/${courseId}`),
+      apiFetch(`/enrollments/${courseId}`)
+    ])
+
+    courseData = courseRes.course
+    enrollmentData = enrollRes.enrollment
+    completedLessons = enrollmentData?.completedLessons || []
+
+    // Header
+    document.getElementById('header-title').textContent = courseData.title
+
+    // Course meta
+    document.getElementById('mi-cat').textContent = courseData.category || '—'
+    document.getElementById('mi-level').textContent = courseData.level || '—'
+    document.getElementById('mi-lang').textContent = courseData.language || 'English'
+    document.getElementById('mi-enroll').textContent = courseData.totalEnrollments || 0
+
+    // If already completed/cert issued
+    if(enrollmentData?.certificate?.issued) {
+      document.getElementById('cert-icon').textContent = '🎓'
+      document.getElementById('cert-title').textContent = 'Certificate ready!'
+      document.getElementById('cert-sub').textContent = `Certificate ID: ${enrollmentData.certificate.certificateId}`
+      document.getElementById('btn-get-cert').disabled = false
+      document.getElementById('btn-get-cert').textContent = '⬇ Download Certificate'
+      document.getElementById('btn-get-cert').style.background = 'linear-gradient(135deg,var(--gold),var(--saffron))'
+    }
+
+    renderLessons()
+    updateProgressUI()
+
+    // Auto-select first incomplete lesson
+    if(courseData.lessons?.length) {
+      const firstIncomplete = courseData.lessons.findIndex(l => !completedLessons.includes(l._id))
+      selectLesson(firstIncomplete >= 0 ? firstIncomplete : 0)
+    }
+
+  } catch(err) {
+    console.error(err)
+    showToast('⚠️ Failed to load course', 'var(--red)')
+  }
+
+  setTimeout(() => {
+    const loader = document.getElementById('loader')
+    loader.style.opacity = '0'
+    setTimeout(() => loader.remove(), 400)
+  }, 800)
+}
+
+init()
+</script>
+</body>
+</html>

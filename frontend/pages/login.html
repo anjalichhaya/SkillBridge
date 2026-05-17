@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Login — SkillBridge India</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --saffron:#FF6B00;
+  --saffron-2:#FF8C33;
+  --saffron-bg:#FFF3EA;
+  --navy:#0D1B3E;
+  --navy-2:#1A2F5E;
+  --green:#138808;
+  --gold:#F5A623;
+  --border:#E4E9F2;
+  --text:#0D1B3E;
+  --text-2:#5A6A85;
+  --text-3:#9AAABB;
+  --error:#DC2626;
+  --error-bg:#FEF2F2;
+  --success:#138808;
+  --success-bg:#EAF6EA;
+}
+
+html,body{height:100%;font-family:'DM Sans',sans-serif;overflow:hidden}
+
+/* ── Layout ─────────────────────────────────────────────── */
+.page{display:grid;grid-template-columns:1fr 1fr;height:100vh}
+
+/* ── Left Panel ─────────────────────────────────────────── */
+.left{
+  background:var(--navy);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:40px;
+}
+
+/* Decorative background elements */
+.bg-circle{position:absolute;border-radius:50%;opacity:0.06}
+.bg-c1{width:500px;height:500px;background:var(--saffron);top:-150px;right:-150px}
+.bg-c2{width:300px;height:300px;background:var(--gold);bottom:-80px;left:-80px}
+.bg-c3{width:200px;height:200px;background:#fff;top:40%;left:30%;opacity:0.03}
+
+/* Ashoka chakra pattern */
+.chakra{
+  position:absolute;bottom:60px;right:40px;
+  width:180px;height:180px;opacity:0.05;
+}
+
+/* Tricolor bar */
+.tricolor{display:flex;gap:3px;margin-bottom:40px}
+.tc-bar{height:3px;flex:1;border-radius:2px}
+
+.brand{position:relative;z-index:2}
+.brand-logo{
+  display:flex;align-items:center;gap:12px;margin-bottom:60px
+}
+.brand-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--saffron),#FF4500);
+  display:flex;align-items:center;justify-content:center;
+}
+.brand-icon svg{width:22px;height:22px}
+.brand-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px}
+.brand-name span{color:var(--saffron)}
+
+.left-headline{
+  font-family:'Syne',sans-serif;
+  font-size:38px;font-weight:800;
+  color:#fff;line-height:1.15;
+  letter-spacing:-1px;
+  margin-bottom:16px;
+}
+.left-headline em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--saffron),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text
+}
+.left-sub{font-size:15px;color:rgba(255,255,255,0.5);line-height:1.6;max-width:340px}
+
+.stats-row{
+  display:flex;gap:0;margin-top:48px;
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding-top:28px;position:relative;z-index:2
+}
+.stat-item{flex:1;padding-right:20px;border-right:1px solid rgba(255,255,255,0.08)}
+.stat-item:last-child{border-right:none;padding-left:20px;padding-right:0}
+.stat-item:not(:first-child){padding-left:20px}
+.stat-num{
+  font-family:'Syne',sans-serif;font-size:24px;font-weight:700;
+  color:var(--saffron);line-height:1
+}
+.stat-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-top:4px}
+
+.left-footer{position:relative;z-index:2}
+.scheme-tags{display:flex;gap:8px;flex-wrap:wrap}
+.scheme-tag{
+  font-size:10px;font-weight:500;
+  padding:4px 10px;border-radius:20px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  color:rgba(255,255,255,0.45)
+}
+
+/* ── Right Panel ─────────────────────────────────────────── */
+.right{
+  background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  padding:40px;overflow-y:auto;
+}
+
+.form-wrap{width:100%;max-width:380px}
+
+.form-top{margin-bottom:32px}
+.form-eyebrow{
+  font-size:11px;font-weight:500;color:var(--saffron);
+  letter-spacing:0.1em;text-transform:uppercase;
+  margin-bottom:8px;display:flex;align-items:center;gap:6px
+}
+.form-eyebrow::before{content:'';width:20px;height:1px;background:var(--saffron)}
+.form-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--navy);letter-spacing:-0.5px;line-height:1.2}
+.form-sub{font-size:13px;color:var(--text-2);margin-top:8px}
+
+/* ── Form elements ──────────────────────────────────────── */
+.field{margin-bottom:16px}
+.field-label{
+  display:block;font-size:12px;font-weight:500;
+  color:var(--text-2);margin-bottom:6px
+}
+.field-wrap{position:relative}
+.field-icon{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  color:var(--text-3);pointer-events:none;
+  display:flex;align-items:center
+}
+.field-input{
+  width:100%;padding:11px 12px 11px 38px;
+  border:1.5px solid var(--border);border-radius:10px;
+  font-size:13px;font-family:'DM Sans',sans-serif;
+  color:var(--text);background:#fff;outline:none;
+  transition:all 0.15s
+}
+.field-input:focus{border-color:var(--saffron);background:#fff;box-shadow:0 0 0 3px rgba(255,107,0,0.08)}
+.field-input.error{border-color:var(--error);background:var(--error-bg)}
+.field-input::placeholder{color:var(--text-3)}
+.pw-toggle{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  cursor:pointer;color:var(--text-3);display:flex;align-items:center;
+  background:none;border:none;padding:2px;transition:color 0.15s
+}
+.pw-toggle:hover{color:var(--saffron)}
+.field-error{font-size:11px;color:var(--error);margin-top:4px;display:none}
+.field-error.show{display:block}
+
+/* ── Submit btn ─────────────────────────────────────────── */
+.submit-btn{
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,var(--saffron),#FF4500);
+  color:#fff;border:none;border-radius:10px;
+  font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;
+  cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:8px;position:relative;overflow:hidden
+}
+.submit-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,#FF4500,var(--saffron));
+  opacity:0;transition:opacity 0.2s
+}
+.submit-btn:hover::before{opacity:1}
+.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,107,0,0.35)}
+.submit-btn:active{transform:translateY(0)}
+.submit-btn:disabled{opacity:0.7;cursor:not-allowed;transform:none}
+.submit-btn span{position:relative;z-index:1}
+.btn-spinner{
+  width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);
+  border-top-color:#fff;border-radius:50%;
+  animation:spin 0.7s linear infinite;display:none;position:relative;z-index:1
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Alert ──────────────────────────────────────────────── */
+.alert{
+  padding:10px 14px;border-radius:8px;
+  font-size:12px;font-weight:500;margin-bottom:16px;
+  display:none;align-items:center;gap:8px
+}
+.alert.show{display:flex}
+.alert-error{background:var(--error-bg);color:var(--error);border:1px solid rgba(220,38,38,0.15)}
+.alert-success{background:var(--success-bg);color:var(--success);border:1px solid rgba(19,136,8,0.15)}
+
+/* ── Divider ─────────────────────────────────────────────── */
+.divider{display:flex;align-items:center;gap:10px;margin:20px 0}
+.divider-line{flex:1;height:1px;background:var(--border)}
+.divider-text{font-size:11px;color:var(--text-3)}
+
+/* ── Switch link ─────────────────────────────────────────── */
+.switch-text{text-align:center;font-size:13px;color:var(--text-2);margin-top:20px}
+.switch-link{color:var(--saffron);font-weight:600;cursor:pointer;text-decoration:none}
+.switch-link:hover{text-decoration:underline}
+
+/* ── Forgot ──────────────────────────────────────────────── */
+.forgot-link{
+  font-size:12px;color:var(--saffron);font-weight:500;
+  text-align:right;display:block;margin-top:4px;text-decoration:none
+}
+.forgot-link:hover{text-decoration:underline}
+
+/* ── Remember me ─────────────────────────────────────────── */
+.check-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.check-row input[type=checkbox]{
+  width:15px;height:15px;accent-color:var(--saffron);cursor:pointer
+}
+.check-row label{font-size:12px;color:var(--text-2);cursor:pointer}
+
+/* ── Role selector (register) ────────────────────────────── */
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.role-card{
+  border:1.5px solid var(--border);border-radius:10px;
+  padding:12px 10px;cursor:pointer;transition:all 0.15s;
+  text-align:center;position:relative
+}
+.role-card:hover{border-color:var(--saffron);background:var(--saffron-bg)}
+.role-card.selected{border-color:var(--saffron);background:var(--saffron-bg)}
+.role-card input[type=radio]{position:absolute;opacity:0;pointer-events:none}
+.role-emoji{font-size:20px;margin-bottom:4px;display:block}
+.role-name{font-size:12px;font-weight:600;color:var(--text)}
+.role-desc{font-size:10px;color:var(--text-3);margin-top:1px}
+.role-check{
+  position:absolute;top:6px;right:6px;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--saffron);display:none;
+  align-items:center;justify-content:center
+}
+.role-card.selected .role-check{display:flex}
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeSlideLeft{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+.left{animation:fadeSlideLeft 0.6s ease forwards}
+.form-wrap{animation:fadeSlideUp 0.5s 0.1s ease both}
+
+/* ── Page transition ─────────────────────────────────────── */
+.page-out{animation:pageOut 0.3s ease forwards}
+@keyframes pageOut{to{opacity:0;transform:translateY(-8px)}}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media(max-width:768px){
+  .page{grid-template-columns:1fr}
+  .left{display:none}
+  .right{padding:24px}
+}
+</style>
+</head>
+<body>
+
+<div class="page" id="page">
+  <!-- Left decorative panel -->
+  <div class="left">
+    <div class="bg-circle bg-c1"></div>
+    <div class="bg-circle bg-c2"></div>
+    <div class="bg-circle bg-c3"></div>
+
+    <!-- Ashoka Chakra SVG -->
+    <svg class="chakra" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="48" stroke="white" stroke-width="2"/>
+      <circle cx="50" cy="50" r="6" fill="white"/>
+      <circle cx="50" cy="50" r="40" stroke="white" stroke-width="1" stroke-dasharray="2 4"/>
+      <!-- 24 spokes -->
+      <g stroke="white" stroke-width="1">
+        <line x1="50" y1="10" x2="50" y2="44"/><line x1="58.1" y1="10.7" x2="53.4" y2="44.2"/>
+        <line x1="65.6" y1="12.8" x2="56.5" y2="43.1"/><line x1="72.3" y1="16.9" x2="59.1" y2="41.4"/>
+        <line x1="77.8" y1="22.2" x2="60.9" y2="39.1"/><line x1="81.9" y1="28.7" x2="62.1" y2="36.5"/>
+        <line x1="84.1" y1="35.8" x2="62.6" y2="33.9"/><line x1="84.3" y1="43.4" x2="62.1" y2="31.7"/>
+        <line x1="82.5" y1="50.9" x2="60.9" y2="30"/><line x1="78.9" y1="57.9" x2="59.1" y2="28.6"/>
+        <line x1="73.9" y1="64.1" x2="56.5" y2="27.9"/><line x1="67.8" y1="69.2" x2="53.4" y2="27.8"/>
+        <line x1="50" y1="90" x2="50" y2="56"/><line x1="41.9" y1="89.3" x2="46.6" y2="55.8"/>
+        <line x1="34.4" y1="87.2" x2="43.5" y2="56.9"/><line x1="27.7" y1="83.1" x2="40.9" y2="58.6"/>
+        <line x1="22.2" y1="77.8" x2="39.1" y2="60.9"/><line x1="18.1" y1="71.3" x2="37.9" y2="63.5"/>
+        <line x1="15.9" y1="64.2" x2="37.4" y2="66.1"/><line x1="15.7" y1="56.6" x2="37.9" y2="68.3"/>
+        <line x1="17.5" y1="49.1" x2="39.1" y2="70"/><line x1="21.1" y1="42.1" x2="40.9" y2="71.4"/>
+        <line x1="26.1" y1="35.9" x2="43.5" y2="72.1"/><line x1="32.2" y1="30.8" x2="46.6" y2="72.2"/>
+      </g>
+    </svg>
+
+    <div class="brand">
+      <div class="brand-logo">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="brand-name">Skill<span>Bridge</span></div>
+      </div>
+
+      <div class="tricolor">
+        <div class="tc-bar" style="background:var(--saffron)"></div>
+        <div class="tc-bar" style="background:#fff;opacity:0.2"></div>
+        <div class="tc-bar" style="background:var(--green)"></div>
+      </div>
+
+      <div class="left-headline">
+        Bridge the gap<br>between <em>learning</em><br>&amp; <em>earning</em>
+      </div>
+      <div class="left-sub">
+        India's platform for skill development, certified courses, and direct employment opportunities.
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-num">50K+</div>
+          <div class="stat-lbl">Learners</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">200+</div>
+          <div class="stat-lbl">Courses</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">98%</div>
+          <div class="stat-lbl">Placement</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="left-footer">
+      <div class="scheme-tags">
+        <span class="scheme-tag">PMKVY</span>
+        <span class="scheme-tag">DDUGKY</span>
+        <span class="scheme-tag">NAPS</span>
+        <span class="scheme-tag">Skill India</span>
+        <span class="scheme-tag">Digital India</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right form panel -->
+  <div class="right">
+    <div class="form-wrap">
+
+      <!-- LOGIN FORM -->
+      <div id="login-form">
+        <div class="form-top">
+          <div class="form-eyebrow">Welcome back</div>
+          <div class="form-title">Sign in to<br>SkillBridge</div>
+          <div class="form-sub">Continue your learning journey</div>
+        </div>
+
+        <div class="alert alert-error" id="login-error">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="login-error-msg">Invalid email or password</span>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="login-email">Email address</label>
+          <div class="field-wrap">
+            <span class="field-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+            <input class="field-input" type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/>
+          </div>
+          <div class="field-error" id="login-email-err">Please enter a valid email</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="login-password">Password</label>
+          <div class="field-wrap">
+            <span class="field-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <input class="field-input" type="password" id="login-password" placeholder="Your password" autocomplete="current-password"/>
+            <button class="pw-toggle" type="button" onclick="togglePw('login-password', this)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="field-error" id="login-pw-err">Password is required</div>
+          <a class="forgot-link" href="#" onclick="showForgot()">Forgot password?</a>
+        </div>
+
+        <div class="check-row">
+          <input type="checkbox" id="remember-me"/>
+          <label for="remember-me">Remember me for 7 days</label>
+        </div>
+
+        <button class="submit-btn" id="login-btn" onclick="handleLogin()">
+          <span>Sign in</span>
+          <span class="btn-spinner" id="login-spinner"></span>
+        </button>
+
+        <div class="switch-text">
+          Don't have an account?
+          <a class="switch-link" onclick="showRegister()">Create one free</a>
+        </div>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="register-form" style="display:none">
+        <div class="form-top">
+          <div class="form-eyebrow">Join us</div>
+          <div class="form-title">Create your<br>account</div>
+          <div class="form-sub">Start your skill journey today</div>
+        </div>
+
+        <div class="alert alert-error" id="reg-error">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="reg-error-msg">Something went wrong</span>
+        </div>
+
+        <div class="alert alert-success" id="reg-success">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Account created! Redirecting...</span>
+        </div>
+
+        <div class="field">
+          <label class="field-label">I am a</label>
+          <div class="role-grid">
+            <div class="role-card selected" onclick="selectRole('student', this)">
+              <input type="radio" name="role" value="student" checked/>
+              <span class="role-emoji">🎓</span>
+              <div class="role-name">Student</div>
+              <div class="role-desc">Learn & get certified</div>
+              <div class="role-check">
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+            <div class="role-card" onclick="selectRole('instructor', this)">
+              <input type="radio" name="role" value="instructor"/>
+              <span class="role-emoji">👨‍🏫</span>
+              <div class="role-name">Instructor</div>
+              <div class="role-desc">Teach & earn</div>
+              <div class="role-check">
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+            <div class="role-card" onclick="selectRole('employer', this)">
+              <input type="radio" name="role" value="employer"/>
+              <span class="role-emoji">🏢</span>
+              <div class="role-name">Employer</div>
+              <div class="role-desc">Post jobs & hire</div>
+              <div class="role-check">
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+            <div class="role-card" onclick="selectRole('admin', this)">
+              <input type="radio" name="role" value="admin"/>
+              <span class="role-emoji">⚙️</span>
+              <div class="role-name">Admin</div>
+              <div class="role-desc">Manage platform</div>
+              <div class="role-check">
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="reg-name">Full name</label>
+          <div class="field-wrap">
+            <span class="field-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            <input class="field-input" type="text" id="reg-name" placeholder="Ambika Raj"/>
+          </div>
+          <div class="field-error" id="reg-name-err">Name is required</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="reg-email">Email address</label>
+          <div class="field-wrap">
+            <span class="field-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+            <input class="field-input" type="email" id="reg-email" placeholder="you@example.com"/>
+          </div>
+          <div class="field-error" id="reg-email-err">Please enter a valid email</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="reg-password">Password</label>
+          <div class="field-wrap">
+            <span class="field-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <input class="field-input" type="password" id="reg-password" placeholder="Min 6 characters"/>
+            <button class="pw-toggle" type="button" onclick="togglePw('reg-password', this)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="field-error" id="reg-pw-err">Password must be at least 6 characters</div>
+        </div>
+
+        <button class="submit-btn" id="reg-btn" onclick="handleRegister()">
+          <span>Create account</span>
+          <span class="btn-spinner" id="reg-spinner"></span>
+        </button>
+
+        <div class="switch-text">
+          Already have an account?
+          <a class="switch-link" onclick="showLogin()">Sign in</a>
+        </div>
+      </div>
+
+      <!-- FORGOT PASSWORD -->
+      <div id="forgot-form" style="display:none">
+        <div class="form-top">
+          <div class="form-eyebrow">Reset password</div>
+          <div class="form-title">Forgot your<br>password?</div>
+          <div class="form-sub">Enter your email and we'll send a reset link</div>
+        </div>
+
+        <div class="alert alert-error" id="forgot-error">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="forgot-error-msg">No account found</span>
+        </div>
+
+        <div class="alert alert-success" id="forgot-success">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Reset link sent! Check your email.</span>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="forgot-email">Email address</label>
+          <div class="field-wrap">
+            <span class="field-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+            <input class="field-input" type="email" id="forgot-email" placeholder="you@example.com"/>
+          </div>
+        </div>
+
+        <button class="submit-btn" id="forgot-btn" onclick="handleForgot()">
+          <span>Send reset link</span>
+          <span class="btn-spinner" id="forgot-spinner"></span>
+        </button>
+
+        <div class="switch-text">
+          <a class="switch-link" onclick="showLogin()">← Back to sign in</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api'
+
+// ── Role selection ────────────────────────────────────────
+let selectedRole = 'student'
+const selectRole = (role, card) => {
+  selectedRole = role
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'))
+  card.classList.add('selected')
+}
+
+// ── Password toggle ───────────────────────────────────────
+const togglePw = (inputId, btn) => {
+  const input = document.getElementById(inputId)
+  const isText = input.type === 'text'
+  input.type = isText ? 'password' : 'text'
+  btn.innerHTML = isText
+    ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+    : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+}
+
+// ── Form switching ────────────────────────────────────────
+const showLogin = () => {
+  document.getElementById('register-form').style.display = 'none'
+  document.getElementById('forgot-form').style.display = 'none'
+  document.getElementById('login-form').style.display = 'block'
+  clearAlerts()
+}
+const showRegister = () => {
+  document.getElementById('login-form').style.display = 'none'
+  document.getElementById('forgot-form').style.display = 'none'
+  document.getElementById('register-form').style.display = 'block'
+  clearAlerts()
+}
+const showForgot = () => {
+  document.getElementById('login-form').style.display = 'none'
+  document.getElementById('register-form').style.display = 'none'
+  document.getElementById('forgot-form').style.display = 'block'
+  clearAlerts()
+}
+
+const clearAlerts = () => {
+  document.querySelectorAll('.alert').forEach(a => a.classList.remove('show'))
+  document.querySelectorAll('.field-error').forEach(e => e.classList.remove('show'))
+  document.querySelectorAll('.field-input').forEach(i => i.classList.remove('error'))
+}
+
+// ── Validation ────────────────────────────────────────────
+const isValidEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)
+
+const showFieldError = (inputId, errId) => {
+  document.getElementById(inputId).classList.add('error')
+  document.getElementById(errId).classList.add('show')
+}
+
+// ── Loading state ─────────────────────────────────────────
+const setLoading = (btnId, spinnerId, loading) => {
+  const btn = document.getElementById(btnId)
+  const spinner = document.getElementById(spinnerId)
+  btn.disabled = loading
+  spinner.style.display = loading ? 'block' : 'none'
+}
+
+// ── Redirect by role ──────────────────────────────────────
+const redirectByRole = (role) => {
+  const routes = {
+    admin: '../pages/admin-dashboard.html',
+    student: '../pages/student-dashboard.html',
+    instructor: '../pages/instructor-dashboard.html',
+    employer: '../pages/employer-dashboard.html'
+  }
+  // Animate out
+  document.getElementById('page').classList.add('page-out')
+  setTimeout(() => {
+    window.location.href = routes[role] || '../pages/student-dashboard.html'
+  }, 300)
+}
+
+// ── LOGIN ─────────────────────────────────────────────────
+const handleLogin = async () => {
+  clearAlerts()
+  const email = document.getElementById('login-email').value.trim()
+  const password = document.getElementById('login-password').value
+
+  let valid = true
+  if (!isValidEmail(email)) { showFieldError('login-email','login-email-err'); valid = false }
+  if (!password) { showFieldError('login-password','login-pw-err'); valid = false }
+  if (!valid) return
+
+  setLoading('login-btn','login-spinner', true)
+
+  try {
+    const res = await fetch(API + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password })
+    })
+
+    const data = await res.json()
+
+    if (!data.success) {
+      document.getElementById('login-error-msg').textContent = data.message || 'Invalid credentials'
+      document.getElementById('login-error').classList.add('show')
+      return
+    }
+
+    // Save to localStorage
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('user', JSON.stringify(data.user))
+
+    // Redirect by role
+    redirectByRole(data.user.role)
+
+  } catch (err) {
+    document.getElementById('login-error-msg').textContent = 'Cannot connect to server. Is the backend running?'
+    document.getElementById('login-error').classList.add('show')
+  } finally {
+    setLoading('login-btn','login-spinner', false)
+  }
+}
+
+// ── REGISTER ──────────────────────────────────────────────
+const handleRegister = async () => {
+  clearAlerts()
+  const name = document.getElementById('reg-name').value.trim()
+  const email = document.getElementById('reg-email').value.trim()
+  const password = document.getElementById('reg-password').value
+
+  let valid = true
+  if (!name) { showFieldError('reg-name','reg-name-err'); valid = false }
+  if (!isValidEmail(email)) { showFieldError('reg-email','reg-email-err'); valid = false }
+  if (password.length < 6) { showFieldError('reg-password','reg-pw-err'); valid = false }
+  if (!valid) return
+
+  setLoading('reg-btn','reg-spinner', true)
+
+  try {
+    const res = await fetch(API + '/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ name, email, password, role: selectedRole })
+    })
+
+    const data = await res.json()
+
+    if (!data.success) {
+      document.getElementById('reg-error-msg').textContent = data.message || 'Registration failed'
+      document.getElementById('reg-error').classList.add('show')
+      return
+    }
+
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('user', JSON.stringify(data.user))
+
+    document.getElementById('reg-success').classList.add('show')
+
+    setTimeout(() => redirectByRole(data.user.role), 1200)
+
+  } catch (err) {
+    document.getElementById('reg-error-msg').textContent = 'Cannot connect to server. Is the backend running?'
+    document.getElementById('reg-error').classList.add('show')
+  } finally {
+    setLoading('reg-btn','reg-spinner', false)
+  }
+}
+
+// ── FORGOT PASSWORD ───────────────────────────────────────
+const handleForgot = async () => {
+  clearAlerts()
+  const email = document.getElementById('forgot-email').value.trim()
+  if (!isValidEmail(email)) {
+    document.getElementById('forgot-email').classList.add('error')
+    return
+  }
+
+  setLoading('forgot-btn','forgot-spinner', true)
+
+  try {
+    const res = await fetch(API + '/auth/password/forgot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    })
+    const data = await res.json()
+
+    if (!data.success) {
+      document.getElementById('forgot-error-msg').textContent = data.message
+      document.getElementById('forgot-error').classList.add('show')
+      return
+    }
+    document.getElementById('forgot-success').classList.add('show')
+
+  } catch (err) {
+    document.getElementById('forgot-error-msg').textContent = 'Cannot connect to server.'
+    document.getElementById('forgot-error').classList.add('show')
+  } finally {
+    setLoading('forgot-btn','forgot-spinner', false)
+  }
+}
+
+// ── Enter key ─────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return
+  if (document.getElementById('login-form').style.display !== 'none') handleLogin()
+  else if (document.getElementById('register-form').style.display !== 'none') handleRegister()
+  else if (document.getElementById('forgot-form').style.display !== 'none') handleForgot()
+})
+
+// ── Auto redirect if already logged in ───────────────────
+if (localStorage.getItem('token')) {
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  if (user.role) redirectByRole(user.role)
+}
+</script>
+</body>
+</html>

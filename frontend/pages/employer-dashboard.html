@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Employer Dashboard — SkillBridge India</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --saffron:#FF6B00;--saffron-2:#FF8C33;--saffron-bg:#FFF3EA;
+  --navy:#0D1B3E;--navy-2:#1A2F5E;--navy-bg:#EEF2FA;
+  --green:#138808;--green-bg:#EAF6EA;
+  --gold:#E8930A;--gold-bg:#FEF6E4;
+  --red:#DC2626;--red-bg:#FEF2F2;
+  --blue:#0891B2;--blue-bg:#E0F7FA;
+  --purple:#7B2FBE;--purple-bg:#F3EEFF;
+  --sidebar-w:230px;--topbar-h:64px;
+  --bg:#F0F3FA;--card:#fff;--border:#E4E9F2;
+  --text:#0D1B3E;--text-2:#5A6A85;--text-3:#9AAABB;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 1px 3px rgba(13,27,62,0.06),0 4px 16px rgba(13,27,62,0.04);
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sb-brand{padding:22px 20px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sb-brand-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--saffron),#FF4500);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-brand-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#fff}
+.sb-brand-name span{color:var(--saffron)}
+.sb-nav{flex:1;padding:16px 12px;overflow-y:auto;scrollbar-width:none}
+.nav-group{margin-bottom:20px}
+.nav-group-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.25);letter-spacing:0.1em;text-transform:uppercase;padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);cursor:pointer;transition:all 0.15s;margin-bottom:2px;text-decoration:none;position:relative}
+.nav-item:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.06)}
+.nav-item.active{color:#fff;background:rgba(255,107,0,0.18)}
+.nav-item.active::before{content:'';position:absolute;left:-12px;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--saffron);border-radius:0 2px 2px 0}
+.nav-item-icon{width:16px;height:16px;flex-shrink:0;opacity:0.7}
+.nav-item.active .nav-item-icon{opacity:1}
+.sb-footer{padding:16px 12px;border-top:1px solid rgba(255,255,255,0.06)}
+.sb-user{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer}
+.sb-user:hover{background:rgba(255,255,255,0.05)}
+.sb-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0;overflow:hidden}
+.sb-user-name{font-size:12px;font-weight:600;color:#fff}
+.sb-user-role{font-size:10px;color:rgba(255,255,255,0.35)}
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column}
+.topbar{height:var(--topbar-h);background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+.topbar-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--navy)}
+.topbar-sub{font-size:12px;color:var(--text-2);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.btn-primary{padding:9px 18px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;display:flex;align-items:center;gap:6px}
+.btn-primary:hover{background:var(--saffron-2);transform:translateY(-1px)}
+.btn-outline{padding:9px 18px;background:transparent;color:var(--text-2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.btn-outline:hover{border-color:var(--saffron);color:var(--saffron)}
+.logout-btn{padding:7px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.logout-btn:hover{background:var(--navy-2)}
+.content{padding:24px 28px;flex:1}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:18px 20px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:14px;transition:transform 0.2s}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stat-icon svg{width:18px;height:18px}
+.stat-value{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text);line-height:1}
+.stat-label{font-size:11px;color:var(--text-3);margin-top:3px}
+.card{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:600;color:var(--text)}
+.card-sub{font-size:11px;color:var(--text-3);margin-top:1px}
+.card-action{font-size:12px;color:var(--saffron);font-weight:500;cursor:pointer}
+.card-action:hover{text-decoration:underline}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+
+/* ── Job card ── */
+.job-card{background:var(--card);border-radius:var(--radius);padding:18px;border:1px solid var(--border);box-shadow:var(--shadow);transition:all 0.2s;margin-bottom:12px}
+.job-card:hover{border-color:var(--saffron)}
+.job-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.job-title{font-size:14px;font-weight:600;color:var(--text)}
+.job-company{font-size:12px;color:var(--text-3);margin-top:2px}
+.job-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.job-tag{font-size:10px;font-weight:500;padding:3px 9px;border-radius:10px}
+.job-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border)}
+.job-stat{text-align:center}
+.job-stat-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text)}
+.job-stat-lbl{font-size:10px;color:var(--text-3)}
+.status-pill{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;display:inline-block}
+.pill-open{background:var(--green-bg);color:var(--green)}
+.pill-closed{background:var(--red-bg);color:var(--red)}
+.pill-draft{background:var(--navy-bg);color:var(--navy-2)}
+
+/* ── Applicant card ── */
+.applicant-card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:10px;transition:all 0.2s}
+.applicant-card:hover{border-color:var(--saffron)}
+.app-header{display:flex;align-items:flex-start;gap:12px}
+.app-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0}
+.app-name{font-size:13px;font-weight:600;color:var(--text)}
+.app-meta{font-size:11px;color:var(--text-3);margin-top:2px}
+.app-status-select{padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-2);background:#fff;outline:none;cursor:pointer;transition:border-color 0.15s;margin-left:auto}
+.app-status-select:focus{border-color:var(--saffron)}
+.app-cover{font-size:12px;color:var(--text-2);margin-top:10px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);line-height:1.5;border-left:3px solid var(--saffron)}
+.app-certs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.app-cert-tag{font-size:10px;background:var(--gold-bg);color:var(--gold);padding:2px 8px;border-radius:10px;font-weight:500}
+
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,27,62,0.5);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--card);border-radius:16px;padding:28px;width:600px;max-width:95vw;max-height:90vh;overflow-y:auto;transform:translateY(20px);transition:transform 0.2s;scrollbar-width:thin}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text)}
+.modal-close{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-3);transition:all 0.15s}
+.modal-close:hover{border-color:var(--red);color:var(--red)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-field{display:flex;flex-direction:column;gap:5px}
+.form-field.full{grid-column:1/-1}
+.form-label{font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.05em}
+.form-input,.form-select,.form-textarea{padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;outline:none;transition:border-color 0.15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--saffron)}
+.form-textarea{resize:vertical;min-height:80px}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)}
+
+/* ── Applicants modal ── */
+.applicants-modal{width:700px}
+
+/* ── Filter tabs ── */
+.filter-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.filter-tab{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--text-2);transition:all 0.15s}
+.filter-tab.active{background:var(--saffron);color:#fff;border-color:var(--saffron)}
+
+/* ── Empty ── */
+.empty-state{text-align:center;padding:32px 20px}
+.empty-icon{font-size:36px;margin-bottom:10px}
+.empty-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.empty-sub{font-size:12px;color:var(--text-3)}
+
+/* ── Loading ── */
+.loading-overlay{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.4s}
+.loading-logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#fff;margin-bottom:8px}
+.loading-logo span{color:var(--saffron)}
+.loading-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:32px}
+.loading-bar-wrap{width:200px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden}
+.loading-bar-fill{height:100%;background:var(--saffron);border-radius:2px;animation:loadFill 1s ease forwards}
+@keyframes loadFill{from{width:0}to{width:100%}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp 0.4s ease both}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loader">
+  <div class="loading-logo">Skill<span>Bridge</span></div>
+  <div class="loading-sub">Loading employer dashboard...</div>
+  <div class="loading-bar-wrap"><div class="loading-bar-fill"></div></div>
+</div>
+
+<!-- Post Job Modal -->
+<div class="modal-overlay" id="job-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Post a new job</div>
+      <button class="modal-close" onclick="closeJobModal()">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-field full">
+        <label class="form-label">Job title *</label>
+        <input class="form-input" id="j-title" placeholder="e.g. Junior Frontend Developer"/>
+      </div>
+      <div class="form-field full">
+        <label class="form-label">Job description *</label>
+        <textarea class="form-textarea" id="j-desc" placeholder="Describe responsibilities, requirements..."></textarea>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Company name *</label>
+        <input class="form-input" id="j-company" placeholder="Your company name"/>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Location *</label>
+        <input class="form-input" id="j-location" placeholder="e.g. Bengaluru, Karnataka"/>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Job type</label>
+        <select class="form-select" id="j-type">
+          <option>Full-time</option><option>Part-time</option>
+          <option>Internship</option><option>Contract</option><option>Freelance</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Work mode</label>
+        <select class="form-select" id="j-mode">
+          <option>On-site</option><option>Remote</option><option>Hybrid</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Min salary (₹/year)</label>
+        <input class="form-input" id="j-sal-min" type="number" placeholder="400000"/>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Max salary (₹/year)</label>
+        <input class="form-input" id="j-sal-max" type="number" placeholder="700000"/>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Experience (min years)</label>
+        <input class="form-input" id="j-exp" type="number" placeholder="0"/>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Application deadline *</label>
+        <input class="form-input" id="j-deadline" type="date"/>
+      </div>
+      <div class="form-field full">
+        <label class="form-label">Skills required (comma separated)</label>
+        <input class="form-input" id="j-skills" placeholder="React, Node.js, MongoDB"/>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Skill India scheme</label>
+        <select class="form-select" id="j-scheme">
+          <option value="None">None</option>
+          <option value="PMKVY">PMKVY</option><option value="NAPS">NAPS</option>
+          <option value="DDUGKY">DDUGKY</option><option value="STAR">STAR</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Max applications</label>
+        <input class="form-input" id="j-max-apps" type="number" placeholder="100"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeJobModal()">Cancel</button>
+      <button class="btn-primary" onclick="postJob()">Post Job</button>
+    </div>
+  </div>
+</div>
+
+<!-- Applicants Modal -->
+<div class="modal-overlay" id="applicants-modal">
+  <div class="modal applicants-modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="applicants-modal-title">Applicants</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:2px" id="applicants-modal-sub"></div>
+      </div>
+      <button class="modal-close" onclick="closeApplicantsModal()">✕</button>
+    </div>
+    <div class="filter-tabs" id="app-filter-tabs">
+      <div class="filter-tab active" onclick="filterApplicants('all',this)">All</div>
+      <div class="filter-tab" onclick="filterApplicants('pending',this)">Pending</div>
+      <div class="filter-tab" onclick="filterApplicants('shortlisted',this)">Shortlisted</div>
+      <div class="filter-tab" onclick="filterApplicants('hired',this)">Hired</div>
+      <div class="filter-tab" onclick="filterApplicants('rejected',this)">Rejected</div>
+    </div>
+    <div id="applicants-list"></div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="sb-brand-name">Skill<span>Bridge</span></div>
+    </div>
+    <nav class="sb-nav">
+      <div class="nav-group">
+        <div class="nav-group-label">Hiring</div>
+        <a class="nav-item active" href="#" onclick="showSection('overview')">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Overview
+        </a>
+        <a class="nav-item" href="#" onclick="showSection('jobs')">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          My Job Posts
+        </a>
+        <a class="nav-item" href="#" onclick="showSection('applicants')">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          All Applicants
+        </a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Company</div>
+        <a class="nav-item" href="#" onclick="showSection('profile')">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Company Profile
+        </a>
+      </div>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar" id="sb-avatar" style="background:var(--gold)">E</div>
+        <div>
+          <div class="sb-user-name" id="sb-name">Employer</div>
+          <div class="sb-user-role">Employer</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Good morning 👋</div>
+        <div class="topbar-sub">Find the right talent for your team</div>
+      </div>
+      <div class="topbar-right" style="position:relative">
+        <!-- Notification button -->
+        <div id="notif-btn" onclick="toggleNotif()" style="width:36px;height:36px;border-radius:var(--radius-sm);background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all 0.15s" onmouseover="this.style.borderColor='var(--saffron)'" onmouseleave="this.style.borderColor='var(--border)'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div id="notif-dot" style="width:7px;height:7px;background:var(--saffron);border-radius:50%;position:absolute;top:7px;right:7px;border:1.5px solid #fff"></div>
+        </div>
+        <!-- Notification panel -->
+        <div id="notif-panel" style="display:none;position:absolute;top:48px;right:120px;width:300px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 32px rgba(13,27,62,0.12);z-index:200;overflow:hidden">
+          <div style="padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:13px;font-weight:600;color:var(--text)">Notifications</div>
+            <div style="font-size:11px;color:var(--saffron);cursor:pointer;font-weight:500" onclick="clearNotif()">Mark all read</div>
+          </div>
+          <div id="notif-list" style="max-height:280px;overflow-y:auto">
+            <div style="padding:16px;text-align:center;font-size:12px;color:var(--text-3)">Loading...</div>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="openJobModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Post a Job
+        </button>
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- Overview -->
+      <div id="section-overview">
+
+        <!-- Welcome banner -->
+        <div style="background:linear-gradient(135deg,var(--navy),var(--navy-2));border-radius:var(--radius);padding:24px 28px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;position:relative;overflow:hidden">
+          <div style="position:absolute;right:-20px;top:-20px;width:180px;height:180px;border-radius:50%;background:rgba(255,107,0,0.08)"></div>
+          <div style="position:absolute;right:60px;bottom:-40px;width:140px;height:140px;border-radius:50%;background:rgba(245,166,35,0.06)"></div>
+          <div style="position:relative;z-index:1">
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Employer Dashboard</div>
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:6px">Welcome back, <span style="color:var(--saffron)" id="employer-welcome-name">Employer</span>!</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5)" id="employer-welcome-sub">Find skilled talent for your team today.</div>
+          </div>
+          <button onclick="openJobModal()" style="position:relative;z-index:1;padding:11px 22px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.background='var(--saffron-2)'" onmouseleave="this.style.background='var(--saffron)'">+ Post a Job</button>
+        </div>
+
+        <div class="stats-grid fade-up">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:var(--saffron-bg)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--saffron)" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <div>
+              <div class="stat-value" id="stat-jobs">0</div>
+              <div class="stat-label">Total job posts</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:var(--green-bg)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div>
+              <div class="stat-value" id="stat-open">0</div>
+              <div class="stat-label">Open positions</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:var(--navy-bg)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy-2)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+            <div>
+              <div class="stat-value" id="stat-apps">0</div>
+              <div class="stat-label">Total applicants</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:var(--gold-bg)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div>
+              <div class="stat-value" id="stat-hired">0</div>
+              <div class="stat-label">Hired via platform</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row-2 fade-up">
+          <div>
+            <div class="card-head" style="margin-bottom:12px">
+              <div class="card-title" style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700">Recent job posts</div>
+              <a class="card-action" onclick="showSection('jobs')">View all</a>
+            </div>
+            <div id="overview-jobs"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">Application funnel</div>
+              <div style="font-size:10px;color:var(--text-3)">Real-time data</div>
+            </div>
+            <div id="app-funnel"></div>
+          </div>
+        </div>
+
+        <!-- Calendar + Notes -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+          <!-- Calendar -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">Schedule</div>
+              <div style="display:flex;gap:6px">
+                <div onclick="eCalPrev()" style="width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--text-2)">‹</div>
+                <div onclick="eCalNext()" style="width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--text-2)">›</div>
+              </div>
+            </div>
+            <div style="font-size:12px;font-weight:600;color:var(--text);text-align:center;margin-bottom:10px" id="ecal-month-label"></div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;text-transform:uppercase">Su</div>
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;text-transform:uppercase">Mo</div>
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;text-transform:uppercase">Tu</div>
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;text-transform:uppercase">We</div>
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;text-transform:uppercase">Th</div>
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;text-transform:uppercase">Fr</div>
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;text-transform:uppercase">Sa</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px" id="ecal-dates"></div>
+            <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px" id="ecal-events"></div>
+          </div>
+
+          <!-- Notes -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">Quick Notes</div>
+              <span style="font-size:10px;color:var(--text-3)">Auto-saved</span>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:12px">
+              <input id="enote-input" placeholder="Add a note, press Enter..." maxlength="200"
+                style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;background:var(--bg)"
+                onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"
+                onkeydown="if(event.key==='Enter')eAddNote()"/>
+              <button onclick="eAddNote()" style="padding:9px 14px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Add</button>
+            </div>
+            <div id="enotes-list" style="display:flex;flex-direction:column;gap:7px;max-height:230px;overflow-y:auto;scrollbar-width:thin"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jobs -->
+      <div id="section-jobs" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text)">My Job Posts</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px">Manage all your job listings</div>
+          </div>
+          <button class="btn-primary" onclick="openJobModal()">+ Post a Job</button>
+        </div>
+        <div id="jobs-list"></div>
+      </div>
+
+      <!-- Applicants -->
+      <div id="section-applicants" style="display:none">
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:16px">All Applicants</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:16px">Select a job to view its applicants</div>
+        <div style="display:flex;flex-direction:column;gap:10px" id="jobs-for-applicants"></div>
+      </div>
+
+      <!-- Company Profile -->
+      <div id="section-profile" style="display:none">
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:16px">Company Profile</div>
+        <div style="display:grid;grid-template-columns:260px 1fr;gap:16px;align-items:start">
+
+          <!-- Company card -->
+          <div class="card" style="text-align:center">
+            <div style="background:linear-gradient(135deg,var(--navy),var(--navy-2));height:52px;border-radius:10px 10px 0 0;margin:-20px -20px 0;position:relative">
+              <div style="position:absolute;inset:0;opacity:0.08;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:12px 12px;border-radius:10px 10px 0 0"></div>
+            </div>
+            <div style="width:56px;height:56px;border-radius:12px;background:var(--navy-bg);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--navy-2);margin:-28px auto 10px;border:3px solid #fff;box-shadow:0 2px 8px rgba(13,27,62,0.1);position:relative;z-index:2;overflow:hidden" id="company-logo-display">TC</div>
+            <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text)" id="cprofile-name">Company</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:3px" id="cprofile-location">Location not set</div>
+            <div style="font-size:12px;color:var(--text-2);margin-top:8px;line-height:1.5;padding:0 6px" id="cprofile-desc">No description yet.</div>
+            <div style="display:flex;gap:0;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+              <div style="flex:1;text-align:center;border-right:1px solid var(--border)"><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text)" id="cstat-jobs">0</div><div style="font-size:10px;color:var(--text-3)">Jobs posted</div></div>
+              <div style="flex:1;text-align:center"><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text)" id="cstat-apps">0</div><div style="font-size:10px;color:var(--text-3)">Applicants</div></div>
+            </div>
+            <button onclick="toggleCompanyEdit()" style="width:100%;margin-top:12px;padding:9px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:transparent;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text-2);transition:all 0.15s" onmouseover="this.style.borderColor='var(--saffron)';this.style.color='var(--saffron)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-2)'">✏️ Edit company profile</button>
+          </div>
+
+          <!-- Right column -->
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <!-- View mode -->
+            <div class="card" id="cprofile-view">
+              <div class="card-head"><div class="card-title">Company details</div></div>
+              <div id="cprofile-details"></div>
+            </div>
+
+            <!-- Edit mode -->
+            <div class="card" id="cprofile-edit" style="display:none">
+              <div class="card-head">
+                <div class="card-title">Edit company profile</div>
+                <button onclick="toggleCompanyEdit()" style="font-size:12px;color:var(--text-3);background:none;border:none;cursor:pointer">Cancel</button>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">Company name *</label>
+                  <input id="ce-name" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">Location</label>
+                  <input id="ce-location" placeholder="e.g. Bengaluru, Karnataka" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">Website</label>
+                  <input id="ce-website" placeholder="https://yourcompany.com" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">Your name</label>
+                  <input id="ce-yourname" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px;grid-column:1/-1">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">Company description</label>
+                  <textarea id="ce-desc" rows="3" placeholder="What does your company do?" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;resize:vertical" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end">
+                <button onclick="toggleCompanyEdit()" style="padding:9px 16px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text-2)">Cancel</button>
+                <button onclick="saveCompanyProfile()" style="padding:9px 18px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Save changes</button>
+              </div>
+            </div>
+
+            <!-- Change password -->
+            <div class="card">
+              <div class="card-head"><div class="card-title">Change password</div></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">Current</label>
+                  <input type="password" id="epw-current" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">New</label>
+                  <input type="password" id="epw-new" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">Confirm</label>
+                  <input type="password" id="epw-confirm" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
+                <button onclick="changeEmployerPassword()" style="padding:9px 18px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Update password</button>
+                <span id="epw-msg" style="font-size:12px"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api'
+const getToken = () => localStorage.getItem('token')
+const getUser = () => JSON.parse(localStorage.getItem('user') || '{}')
+const apiFetch = async (url, opts={}) => {
+  const res = await fetch(API + url, {
+    headers: { 'Content-Type':'application/json', Authorization:'Bearer '+getToken() },
+    credentials: 'include', ...opts
+  })
+  return res.json()
+}
+
+const avatarColors = ['#FF6B00','#0D1B3E','#138808','#F5A623','#7B2FBE','#0891B2']
+const getInitials = n => (n||'').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)
+const getColor = n => avatarColors[(n||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0) % avatarColors.length]
+const formatDate = d => new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})
+const timeAgo = d => { const m=Math.floor((Date.now()-new Date(d))/60000); return m<60?m+'m ago':m<1440?Math.floor(m/60)+'h ago':Math.floor(m/1440)+'d ago' }
+
+// ── Sections ──
+const sections = ['overview','jobs','applicants','profile']
+const showSection = (id) => {
+  sections.forEach(s => document.getElementById('section-'+s).style.display = s===id?'block':'none')
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'))
+  const idx = {overview:0,jobs:1,applicants:2,profile:3}
+  const items = document.querySelectorAll('.nav-item')
+  if(items[idx[id]]) items[idx[id]].classList.add('active')
+  if(id==='applicants') renderJobsForApplicants()
+  if(id==='profile') renderCompanyProfile()
+}
+
+// ── Modals ──
+const openJobModal = () => {
+  // Set default deadline 30 days from now
+  const d = new Date(); d.setDate(d.getDate()+30)
+  document.getElementById('j-deadline').value = d.toISOString().split('T')[0]
+  const user = getUser()
+  if(user.company?.name) document.getElementById('j-company').value = user.company.name
+  document.getElementById('job-modal').classList.add('open')
+}
+const closeJobModal = () => document.getElementById('job-modal').classList.remove('open')
+document.getElementById('job-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeJobModal() })
+
+const closeApplicantsModal = () => document.getElementById('applicants-modal').classList.remove('open')
+document.getElementById('applicants-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeApplicantsModal() })
+
+// ── Post job ──
+const postJob = async () => {
+  const title = document.getElementById('j-title').value.trim()
+  const description = document.getElementById('j-desc').value.trim()
+  const companyName = document.getElementById('j-company').value.trim()
+  const location = document.getElementById('j-location').value.trim()
+  const deadline = document.getElementById('j-deadline').value
+
+  if(!title || !description || !companyName || !location || !deadline) {
+    alert('Please fill all required fields'); return
+  }
+
+  const skills = document.getElementById('j-skills').value.split(',').map(s=>s.trim()).filter(Boolean)
+  const data = await apiFetch('/jobs', {
+    method: 'POST',
+    body: JSON.stringify({
+      title, description,
+      company: { name: companyName, location: companyName },
+      location,
+      jobType: document.getElementById('j-type').value,
+      workMode: document.getElementById('j-mode').value,
+      salary: {
+        min: parseInt(document.getElementById('j-sal-min').value)||0,
+        max: parseInt(document.getElementById('j-sal-max').value)||0,
+        isDisclosed: !!(document.getElementById('j-sal-min').value || document.getElementById('j-sal-max').value)
+      },
+      experience: { min: parseInt(document.getElementById('j-exp').value)||0, max: 10 },
+      skillsRequired: skills,
+      applicationDeadline: deadline,
+      skillIndiaScheme: document.getElementById('j-scheme').value,
+      maxApplications: parseInt(document.getElementById('j-max-apps').value)||100
+    })
+  })
+
+  if(data.success) {
+    closeJobModal()
+    allJobs.unshift(data.job)
+    renderJobsList()
+    renderOverviewJobs()
+    document.getElementById('stat-jobs').textContent = allJobs.length
+    document.getElementById('stat-open').textContent = allJobs.filter(j=>j.status==='open').length
+    alert('✅ Job posted successfully! Students can now apply.')
+  } else {
+    alert(data.message || 'Failed to post job')
+  }
+}
+
+// ── Toggle job status ──
+const toggleJobStatus = async (jobId, status) => {
+  const newStatus = status === 'open' ? 'closed' : 'open'
+  const data = await apiFetch(`/jobs/${jobId}`, { method: 'PUT', body: JSON.stringify({ status: newStatus }) })
+  if(data.success) {
+    const job = allJobs.find(j=>j._id===jobId)
+    if(job) job.status = newStatus
+    renderJobsList()
+    renderOverviewJobs()
+    document.getElementById('stat-open').textContent = allJobs.filter(j=>j.status==='open').length
+  }
+}
+
+// ── Delete job ──
+const deleteJob = async (jobId) => {
+  if(!confirm('Delete this job post?')) return
+  const data = await apiFetch(`/jobs/${jobId}`, { method: 'DELETE' })
+  if(data.success) {
+    allJobs = allJobs.filter(j=>j._id!==jobId)
+    renderJobsList(); renderOverviewJobs()
+    document.getElementById('stat-jobs').textContent = allJobs.length
+  }
+}
+
+let allJobs = []
+let currentApplicants = []
+
+const jobCardHTML = (job, showActions=true) => `
+  <div class="job-card">
+    <div class="job-header">
+      <div style="flex:1">
+        <div class="job-title">${job.title}</div>
+        <div class="job-company">${job.company?.name} · ${job.location}</div>
+      </div>
+      <span class="status-pill pill-${job.status||'open'}">${job.status||'open'}</span>
+    </div>
+    <div class="job-tags">
+      <span class="job-tag" style="background:var(--navy-bg);color:var(--navy-2)">${job.jobType}</span>
+      <span class="job-tag" style="background:var(--saffron-bg);color:var(--saffron)">${job.workMode}</span>
+      ${job.skillIndiaScheme!=='None'?`<span class="job-tag" style="background:var(--green-bg);color:var(--green)">${job.skillIndiaScheme}</span>`:''}
+    </div>
+    <div class="job-footer">
+      <div class="job-stat"><div class="job-stat-val">${job.totalApplications||0}</div><div class="job-stat-lbl">Applicants</div></div>
+      <div class="job-stat"><div class="job-stat-val">${job.salaryDisplay||'—'}</div><div class="job-stat-lbl">Salary</div></div>
+      <div class="job-stat"><div class="job-stat-val">${formatDate(job.applicationDeadline)}</div><div class="job-stat-lbl">Deadline</div></div>
+      ${showActions ? `
+        <div style="display:flex;gap:6px">
+          <button onclick="viewApplicants('${job._id}','${job.title.replace(/'/g,"\\'")}',${job.totalApplications||0})" style="padding:6px 12px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-size:11px;font-weight:600;cursor:pointer">View applicants</button>
+          <button onclick="toggleJobStatus('${job._id}','${job.status}')" style="padding:6px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:11px;cursor:pointer;color:var(--text-2)">${job.status==='open'?'Close':'Reopen'}</button>
+          <button onclick="deleteJob('${job._id}')" style="padding:6px 12px;background:var(--red-bg);border:1px solid rgba(220,38,38,0.2);border-radius:var(--radius-sm);font-size:11px;cursor:pointer;color:var(--red)">Delete</button>
+        </div>` : `<button onclick="viewApplicants('${job._id}','${job.title.replace(/'/g,"\\'")}',${job.totalApplications||0})" style="padding:6px 14px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:11px;font-weight:600;cursor:pointer">View applicants (${job.totalApplications||0})</button>`}
+    </div>
+  </div>`
+
+const renderJobsList = () => {
+  const el = document.getElementById('jobs-list')
+  if(!allJobs.length) {
+    el.innerHTML = `<div class="empty-state card"><div class="empty-icon">💼</div><div class="empty-title">No job posts yet</div><div class="empty-sub">Post your first job to start receiving applications</div><button class="btn-primary" onclick="openJobModal()" style="margin-top:12px">Post a Job</button></div>`
+    return
+  }
+  el.innerHTML = allJobs.map(j => jobCardHTML(j, true)).join('')
+}
+
+const renderOverviewJobs = () => {
+  const el = document.getElementById('overview-jobs')
+  if(!allJobs.length) {
+    el.innerHTML = `<div class="empty-state card"><div class="empty-icon">💼</div><div class="empty-title">No jobs posted yet</div><button class="btn-primary" onclick="openJobModal()" style="margin-top:12px">Post first job</button></div>`
+    return
+  }
+  el.innerHTML = allJobs.slice(0,3).map(j => jobCardHTML(j, false)).join('')
+}
+
+const renderJobsForApplicants = () => {
+  const el = document.getElementById('jobs-for-applicants')
+  if(!allJobs.length) {
+    el.innerHTML = `<div class="empty-state card"><div class="empty-icon">📄</div><div class="empty-title">No jobs posted yet</div></div>`
+    return
+  }
+  el.innerHTML = allJobs.map(j => `
+    <div class="job-card" style="cursor:pointer" onclick="viewApplicants('${j._id}','${j.title.replace(/'/g,"\\'")}',${j.totalApplications||0})">
+      <div class="job-header">
+        <div><div class="job-title">${j.title}</div><div class="job-company">${j.company?.name}</div></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="status-pill pill-${j.status}">${j.status}</span>
+          <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--saffron)">${j.totalApplications||0}</span>
+          <span style="font-size:11px;color:var(--text-3)">applicants</span>
+        </div>
+      </div>
+    </div>`).join('')
+}
+
+// ── View applicants ──
+const viewApplicants = async (jobId, jobTitle, totalApps) => {
+  document.getElementById('applicants-modal-title').textContent = jobTitle
+  document.getElementById('applicants-modal-sub').textContent = totalApps + ' total applicants'
+  document.getElementById('applicants-list').innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-3)">Loading...</div>'
+  document.getElementById('applicants-modal').classList.add('open')
+
+  try {
+    const data = await apiFetch(`/applications/job/${jobId}`)
+    currentApplicants = data.applications || []
+    renderApplicants(currentApplicants)
+  } catch(err) {
+    document.getElementById('applicants-list').innerHTML = '<div style="text-align:center;padding:20px;color:var(--red)">Failed to load</div>'
+  }
+}
+
+const statusColors = {pending:'var(--gold)',reviewed:'var(--blue)',shortlisted:'var(--green)',rejected:'var(--red)',hired:'var(--saffron)'}
+
+const renderApplicants = (apps) => {
+  const el = document.getElementById('applicants-list')
+  if(!apps.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">👤</div><div class="empty-title">No applicants yet</div></div>'
+    return
+  }
+  el.innerHTML = apps.map(app => {
+    const applicant = app.applicant || {}
+    const color = getColor(applicant.name||'')
+    return `
+      <div class="applicant-card" id="app-card-${app._id}">
+        <div class="app-header">
+          <div class="app-avatar" style="background:${color}">${getInitials(applicant.name||'A')}</div>
+          <div style="flex:1">
+            <div class="app-name">${applicant.name||'Applicant'}</div>
+            <div class="app-meta">${applicant.email||''} · Applied ${timeAgo(app.createdAt)}</div>
+            ${app.expectedSalary ? `<div style="font-size:11px;color:var(--green);font-weight:500;margin-top:2px">Expected: ₹${(app.expectedSalary/100000).toFixed(1)}L</div>` : ''}
+          </div>
+          <select class="app-status-select" onchange="updateStatus('${app._id}', this.value, this)">
+            <option value="pending" ${app.status==='pending'?'selected':''}>Pending</option>
+            <option value="reviewed" ${app.status==='reviewed'?'selected':''}>Reviewed</option>
+            <option value="shortlisted" ${app.status==='shortlisted'?'selected':''}>Shortlisted</option>
+            <option value="rejected" ${app.status==='rejected'?'selected':''}>Rejected</option>
+            <option value="hired" ${app.status==='hired'?'selected':''}>Hired ✓</option>
+          </select>
+        </div>
+        ${app.coverLetter ? `<div class="app-cover">"${app.coverLetter}"</div>` : ''}
+        ${app.attachedCertificates?.length ? `
+          <div class="app-certs">
+            <span style="font-size:10px;color:var(--text-3)">SkillBridge certs:</span>
+            ${app.attachedCertificates.map(c=>`<span class="app-cert-tag">🎓 ${c.courseTitle}</span>`).join('')}
+          </div>` : ''}
+      </div>`
+  }).join('')
+}
+
+// ── Filter applicants ──
+const filterApplicants = (status, tab) => {
+  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'))
+  tab.classList.add('active')
+  const filtered = status === 'all' ? currentApplicants : currentApplicants.filter(a=>a.status===status)
+  renderApplicants(filtered)
+}
+
+// ── Update application status ──
+const updateStatus = async (appId, status, select) => {
+  select.disabled = true
+  const data = await apiFetch(`/applications/${appId}/status`, {
+    method: 'PUT', body: JSON.stringify({ status })
+  })
+  if(data.success) {
+    select.style.borderColor = statusColors[status]||'var(--border)'
+    // Update hired count
+    if(status === 'hired') {
+      document.getElementById('stat-hired').textContent =
+        parseInt(document.getElementById('stat-hired').textContent||'0') + 1
+    }
+  } else {
+    alert(data.message || 'Failed to update')
+  }
+  select.disabled = false
+}
+
+// ── Greeting ──────────────────────────────────────────────
+const setGreeting = () => {
+  const h = new Date().getHours()
+  const g = h<12?'Good morning':h<17?'Good afternoon':'Good evening'
+  const el = document.getElementById('topbar-title')
+  if(el) el.textContent = g + ' 👋'
+}
+
+// ── Notifications ──────────────────────────────────────────
+let eNotifOpen = false
+
+const toggleNotif = () => {
+  const panel = document.getElementById('notif-panel')
+  eNotifOpen = !eNotifOpen
+  panel.style.display = eNotifOpen ? 'block' : 'none'
+  if(eNotifOpen) buildENotifPanel()
+}
+
+document.addEventListener('click', e => {
+  if(eNotifOpen && !e.target.closest('#notif-btn') && !e.target.closest('#notif-panel')){
+    document.getElementById('notif-panel').style.display = 'none'
+    eNotifOpen = false
+  }
+})
+
+const buildENotifPanel = () => {
+  const el = document.getElementById('notif-list')
+  const items = allJobs.slice(0,5).map(j => ({
+    icon: j.status==='open' ? '💼' : '🔒',
+    text: `<b>${j.title}</b>`,
+    sub: `${j.totalApplications||0} applicant${j.totalApplications!==1?'s':''} · ${j.status}`,
+    color: j.status==='open' ? 'var(--green)' : 'var(--text-3)'
+  }))
+  if(!items.length){
+    el.innerHTML='<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3)">No jobs posted yet.</div>'
+    return
+  }
+  el.innerHTML = items.map(item=>`
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border)">
+      <div style="font-size:16px;flex-shrink:0">${item.icon}</div>
+      <div style="flex:1">
+        <div style="font-size:12px;color:var(--text);line-height:1.4">${item.text}</div>
+        <div style="font-size:10px;color:${item.color};margin-top:2px">${item.sub}</div>
+      </div>
+    </div>`).join('')
+}
+
+const clearNotif = () => {
+  document.getElementById('notif-dot').style.display = 'none'
+  document.getElementById('notif-list').innerHTML = '<div style="padding:16px;text-align:center;font-size:12px;color:var(--text-3)">All caught up ✓</div>'
+}
+
+// ── Calendar ──────────────────────────────────────────────
+let eCalDate = new Date()
+
+const eRenderCalendar = () => {
+  const year = eCalDate.getFullYear(), month = eCalDate.getMonth()
+  const today = new Date()
+  const isCurrent = today.getFullYear()===year && today.getMonth()===month
+  document.getElementById('ecal-month-label').textContent =
+    eCalDate.toLocaleDateString('en-IN',{month:'long',year:'numeric'})
+  const firstDay = new Date(year,month,1).getDay()
+  const daysInMonth = new Date(year,month+1,0).getDate()
+  const el = document.getElementById('ecal-dates')
+  el.innerHTML = ''
+  for(let i=0;i<firstDay;i++) el.innerHTML += `<div></div>`
+  for(let d=1;d<=daysInMonth;d++){
+    const isToday = isCurrent && d===today.getDate()
+    el.innerHTML += `<div style="font-size:11px;text-align:center;padding:5px 2px;border-radius:6px;background:${isToday?'var(--saffron)':'transparent'};color:${isToday?'#fff':'var(--text-2)'};font-weight:${isToday?'700':'400'}">${d}</div>`
+  }
+  const evEl = document.getElementById('ecal-events')
+  const todayStr = today.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'})
+  const reminders = [
+    {label:'Review pending applications', color:'var(--saffron)'},
+    {label:'Follow up with shortlisted candidates', color:'var(--navy-2)'},
+    {label:'Check application deadlines', color:'var(--green)'},
+  ]
+  evEl.innerHTML = `<div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:7px">${todayStr}</div>
+    ${reminders.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:4px 0"><div style="width:5px;height:5px;border-radius:50%;background:${r.color};flex-shrink:0"></div><span style="font-size:11px;color:var(--text-2)">${r.label}</span></div>`).join('')}`
+}
+
+const eCalPrev = () => { eCalDate.setMonth(eCalDate.getMonth()-1); eRenderCalendar() }
+const eCalNext = () => { eCalDate.setMonth(eCalDate.getMonth()+1); eRenderCalendar() }
+
+// ── Notes ─────────────────────────────────────────────────
+const eNoteColors = [
+  {bg:'#FFF3EA',bar:'#FF6B00'},{bg:'#EEF2FA',bar:'#1A2F5E'},
+  {bg:'#EAF6EA',bar:'#138808'},{bg:'#FEF6E4',bar:'#E8930A'},{bg:'#F3EEFF',bar:'#7B2FBE'}
+]
+let eNoteColorIdx = 0
+
+const eLoadNotes = () => {
+  const saved = JSON.parse(localStorage.getItem('sb_employer_notes')||'[]')
+  saved.forEach(n => eRenderNote(n))
+}
+
+const eRenderNote = (note) => {
+  const c = eNoteColors[note.ci % eNoteColors.length]
+  const el = document.createElement('div')
+  el.dataset.ci = note.ci
+  el.style.cssText = `display:flex;align-items:flex-start;gap:8px;padding:9px 10px;border-radius:var(--radius-sm);background:${c.bg}`
+  el.innerHTML = `
+    <div style="width:3px;border-radius:2px;background:${c.bar};flex-shrink:0;align-self:stretch;min-height:18px"></div>
+    <div style="flex:1"><div style="font-size:12px;color:var(--text);line-height:1.45">${note.text}</div><div style="font-size:10px;color:var(--text-3);margin-top:3px">${note.time}</div></div>
+    <button onclick="this.closest('[data-ci]').remove();eSaveNotes()" style="background:none;border:none;font-size:12px;color:var(--text-3);cursor:pointer" onmouseover="this.style.color='var(--red)'" onmouseleave="this.style.color='var(--text-3)'">✕</button>`
+  document.getElementById('enotes-list').prepend(el)
+}
+
+const eAddNote = () => {
+  const input = document.getElementById('enote-input')
+  const text = input.value.trim(); if(!text) return
+  const time = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})
+  const ci = eNoteColorIdx++ % eNoteColors.length
+  eRenderNote({text,time,ci})
+  input.value = ''
+  eSaveNotes()
+}
+
+const eSaveNotes = () => {
+  const items = [...document.querySelectorAll('#enotes-list > div[data-ci]')]
+  const notes = items.map(el => ({
+    text: el.querySelector('div div').textContent,
+    time: el.querySelectorAll('div div')[1].textContent,
+    ci: parseInt(el.dataset.ci)
+  }))
+  localStorage.setItem('sb_employer_notes', JSON.stringify(notes))
+}
+
+// ── Application funnel (REAL DATA) ────────────────────────
+const renderFunnel = async () => {
+  const el = document.getElementById('app-funnel')
+  el.innerHTML = '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:10px">Loading...</div>'
+
+  try {
+    // Fetch real application stats from all employer's jobs
+    const statusCounts = { pending:0, reviewed:0, shortlisted:0, rejected:0, hired:0 }
+    const totalApps = allJobs.reduce((a,j)=>a+(j.totalApplications||0),0)
+
+    // Load applications for each job to get real status breakdown
+    for(const job of allJobs.slice(0,5)) {
+      if(!job.totalApplications) continue
+      try {
+        const data = await apiFetch(`/applications/job/${job._id}`)
+        const apps = data.applications || []
+        apps.forEach(a => {
+          if(statusCounts[a.status] !== undefined) statusCounts[a.status]++
+        })
+      } catch(e) {}
+    }
+
+    const stages = [
+      { label:'Total applied',  val: totalApps,                          color:'var(--navy)',    icon:'📨' },
+      { label:'Pending',        val: statusCounts.pending,               color:'var(--gold)',    icon:'⏳' },
+      { label:'Reviewed',       val: statusCounts.reviewed,              color:'var(--blue)',    icon:'👁' },
+      { label:'Shortlisted',    val: statusCounts.shortlisted,           color:'var(--saffron)', icon:'⭐' },
+      { label:'Hired',          val: statusCounts.hired,                 color:'var(--green)',   icon:'✅' },
+      { label:'Rejected',       val: statusCounts.rejected,              color:'var(--red)',     icon:'❌' },
+    ]
+
+    // Update hired stat card with real count
+    document.getElementById('stat-hired').textContent = statusCounts.hired
+
+    if(!totalApps) {
+      el.innerHTML = '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:16px">No applications yet</div>'
+      return
+    }
+
+    el.innerHTML = stages.map(s => {
+      const pct = totalApps > 0 ? Math.round((s.val / totalApps) * 100) : 0
+      const barW = Math.max(pct, s.val > 0 ? 8 : 0)
+      return `
+        <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:12px">${s.icon}</span>
+              <span style="font-size:12px;font-weight:500;color:var(--text)">${s.label}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;color:var(--text-3)">${pct}%</span>
+              <span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:${s.color};min-width:20px;text-align:right">${s.val}</span>
+            </div>
+          </div>
+          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${barW}%;background:${s.color};border-radius:3px;transition:width 0.8s ease;opacity:0.85"></div>
+          </div>
+        </div>`
+    }).join('')
+  } catch(err) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--red);text-align:center;padding:10px">Could not load funnel data</div>'
+  }
+}
+
+// ── Company profile (matches actual HTML IDs) ─────────────
+const renderCompanyProfile = () => {
+  const user = getUser()
+  const company = user.company || {}
+
+  // Update company card
+  const logoEl = document.getElementById('company-logo-display')
+  const initials = (company.name || user.name || 'C').slice(0,2).toUpperCase()
+  logoEl.textContent = initials
+
+  document.getElementById('cprofile-name').textContent = company.name || 'Company name not set'
+  document.getElementById('cprofile-location').textContent = company.location || 'Location not set'
+  document.getElementById('cprofile-desc').textContent = company.description || 'No description yet.'
+  document.getElementById('cstat-jobs').textContent = allJobs.length
+  document.getElementById('cstat-apps').textContent = allJobs.reduce((a,j)=>a+(j.totalApplications||0),0)
+
+  // Prefill edit form
+  document.getElementById('ce-name').value = company.name || ''
+  document.getElementById('ce-location').value = company.location || ''
+  document.getElementById('ce-website').value = company.website || ''
+  document.getElementById('ce-yourname').value = user.name || ''
+  document.getElementById('ce-desc').value = company.description || ''
+
+  // Populate details view
+  const detailsEl = document.getElementById('cprofile-details')
+  const fields = [
+    ['Contact email', user.email || '—'],
+    ['Website', company.website ? `<a href="${company.website}" target="_blank" style="color:var(--saffron)">${company.website}</a>` : 'Not added'],
+    ['Location', company.location || 'Not added'],
+    ['Description', company.description || 'No description added'],
+  ]
+  detailsEl.innerHTML = fields.map(([l,v]) => `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em;flex-shrink:0;margin-right:12px">${l}</div>
+      <div style="font-size:13px;color:var(--text);text-align:right">${v}</div>
+    </div>`).join('')
+}
+
+const toggleCompanyEdit = () => {
+  const view = document.getElementById('cprofile-view')
+  const edit = document.getElementById('cprofile-edit')
+  const isEditing = edit.style.display !== 'none'
+  view.style.display = isEditing ? 'block' : 'none'
+  edit.style.display = isEditing ? 'none' : 'block'
+  // Update card button text
+  const btn = document.querySelector('[onclick="toggleCompanyEdit()"]')
+  if(btn) btn.textContent = isEditing ? '✏️ Edit company profile' : '✕ Cancel editing'
+}
+
+const saveCompanyProfile = async () => {
+  const name = document.getElementById('ce-name').value.trim()
+  const location = document.getElementById('ce-location').value.trim()
+  const website = document.getElementById('ce-website').value.trim()
+  const description = document.getElementById('ce-desc').value.trim()
+  const yourName = document.getElementById('ce-yourname').value.trim()
+
+  if(!name) { alert('Company name is required'); return }
+
+  try {
+    const res = await apiFetch('/users/profile', {
+      method: 'PUT',
+      body: JSON.stringify({
+        name: yourName || getUser().name,
+        company: { name, location, website, description }
+      })
+    })
+
+    if(res.success) {
+      // Update localStorage
+      const user = getUser()
+      if(yourName) user.name = yourName
+      user.company = { ...user.company, name, location, website, description }
+      localStorage.setItem('user', JSON.stringify(user))
+
+      // Update sidebar + welcome name
+      document.getElementById('sb-name').textContent = name
+      const welcomeEl = document.getElementById('employer-welcome-name')
+      if(welcomeEl) welcomeEl.textContent = name
+
+      // Re-render profile view and close edit mode
+      renderCompanyProfile()
+      // Force back to view mode
+      document.getElementById('cprofile-view').style.display = 'block'
+      document.getElementById('cprofile-edit').style.display = 'none'
+      const btn = document.querySelector('[onclick="toggleCompanyEdit()"]')
+      if(btn) btn.textContent = '✏️ Edit company profile'
+
+      alert('✅ Company profile updated!')
+    } else {
+      alert(res.message || 'Failed to save')
+    }
+  } catch(e) {
+    alert('Server error — check your connection')
+  }
+}
+
+const changeEmployerPassword = async () => {
+  const currentPassword = document.getElementById('epw-current').value
+  const newPassword = document.getElementById('epw-new').value
+  const confirm = document.getElementById('epw-confirm').value
+  const msg = document.getElementById('epw-msg')
+  if(!currentPassword||!newPassword){msg.textContent='⚠️ Fill all fields';msg.style.color='var(--red)';return}
+  if(newPassword!==confirm){msg.textContent='⚠️ Passwords do not match';msg.style.color='var(--red)';return}
+  if(newPassword.length<6){msg.textContent='⚠️ Min 6 characters';msg.style.color='var(--red)';return}
+  try {
+    const res = await fetch(API+'/auth/password/update',{
+      method:'PUT',headers:{'Content-Type':'application/json',Authorization:'Bearer '+getToken()},
+      credentials:'include',body:JSON.stringify({currentPassword,newPassword})
+    })
+    const data = await res.json()
+    if(data.success){
+      msg.textContent='✅ Password updated!'; msg.style.color='var(--green)'
+      document.getElementById('epw-current').value=''
+      document.getElementById('epw-new').value=''
+      document.getElementById('epw-confirm').value=''
+    } else {msg.textContent='⚠️ '+(data.message||'Failed');msg.style.color='var(--red)'}
+  } catch(e){msg.textContent='⚠️ Server error';msg.style.color='var(--red)'}
+}
+
+// ── Init ──
+const init = async () => {
+  setGreeting()
+  eRenderCalendar()
+  eLoadNotes()
+
+  const user = getUser()
+  document.getElementById('sb-name').textContent = user.company?.name || user.name || 'Employer'
+  document.getElementById('employer-welcome-name').textContent = user.company?.name || user.name?.split(' ')[0] || 'Employer'
+  const avatarEl = document.getElementById('sb-avatar')
+  if(user.avatar?.url) {
+    avatarEl.innerHTML = `<img src="${user.avatar.url}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;display:block"/>`
+    avatarEl.style.background = 'none'; avatarEl.style.fontSize = '0'
+  } else {
+    avatarEl.textContent = getInitials(user.name||'E')
+    avatarEl.style.background = getColor(user.name||'E')
+  }
+
+  try {
+    const data = await apiFetch('/jobs/employer/my-jobs')
+    allJobs = data.jobs || []
+    const totalApps = allJobs.reduce((a,j)=>a+(j.totalApplications||0),0)
+
+    document.getElementById('stat-jobs').textContent = allJobs.length
+    document.getElementById('stat-open').textContent = allJobs.filter(j=>j.status==='open').length
+    document.getElementById('stat-apps').textContent = totalApps
+    document.getElementById('stat-hired').textContent = 0
+
+    // Welcome sub
+    document.getElementById('employer-welcome-sub').textContent =
+      allJobs.length > 0
+        ? `You have ${allJobs.filter(j=>j.status==='open').length} open job${allJobs.filter(j=>j.status==='open').length!==1?'s':''} with ${totalApps} applicant${totalApps!==1?'s':''}.`
+        : 'Post your first job to start receiving applications.'
+
+    renderOverviewJobs()
+    renderJobsList()
+    await renderFunnel()  // async — fetches real status breakdown
+  } catch(err) {
+    console.error('Init error:', err)
+  }
+
+  hideLoader()
+}
+
+const handleLogout = async () => {
+  try { await fetch(API+'/auth/logout',{headers:{Authorization:'Bearer '+getToken()},credentials:'include'}) } catch(e){}
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  window.location.href = 'login.html'
+}
+
+if(!getToken()) window.location.href='login.html'
+
+// Always hide loader, even if something crashes
+const hideLoader = () => {
+  setTimeout(()=>{
+    const loader = document.getElementById('loader')
+    if(loader){ loader.style.opacity='0'; setTimeout(()=>loader.remove(),400) }
+  }, 1000)
+}
+
+try { init() } catch(e) { console.error('Init crash:',e); hideLoader() }
+</script>
+</body>
+</html>

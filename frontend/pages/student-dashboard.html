@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Student Dashboard — SkillBridge India</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --saffron:#FF6B00;--saffron-2:#FF8C33;--saffron-bg:#FFF3EA;
+  --navy:#0D1B3E;--navy-2:#1A2F5E;--navy-bg:#EEF2FA;
+  --green:#138808;--green-bg:#EAF6EA;
+  --gold:#E8930A;--gold-bg:#FEF6E4;
+  --red:#DC2626;--red-bg:#FEF2F2;
+  --blue:#0891B2;--blue-bg:#E0F7FA;
+  --purple:#7B2FBE;--purple-bg:#F3EEFF;
+  --sidebar-w:230px;--topbar-h:64px;
+  --bg:#F0F3FA;--card:#fff;--border:#E4E9F2;
+  --text:#0D1B3E;--text-2:#5A6A85;--text-3:#9AAABB;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 1px 3px rgba(13,27,62,0.06),0 4px 16px rgba(13,27,62,0.04);
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+.layout{display:flex;min-height:100vh}
+
+/* ── Sidebar ── */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;background:var(--navy);
+  display:flex;flex-direction:column;position:fixed;
+  top:0;left:0;height:100vh;z-index:100;overflow:hidden;
+}
+.sb-brand{padding:22px 20px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sb-brand-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--saffron),#FF4500);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-brand-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#fff;letter-spacing:-0.3px}
+.sb-brand-name span{color:var(--saffron)}
+.sb-nav{flex:1;padding:16px 12px;overflow-y:auto;scrollbar-width:none}
+.sb-nav::-webkit-scrollbar{display:none}
+.nav-group{margin-bottom:20px}
+.nav-group-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.25);letter-spacing:0.1em;text-transform:uppercase;padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);cursor:pointer;transition:all 0.15s;margin-bottom:2px;text-decoration:none;position:relative}
+.nav-item:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.06)}
+.nav-item.active{color:#fff;background:rgba(255,107,0,0.18)}
+.nav-item.active::before{content:'';position:absolute;left:-12px;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--saffron);border-radius:0 2px 2px 0}
+.nav-item-icon{width:16px;height:16px;flex-shrink:0;opacity:0.7}
+.nav-item.active .nav-item-icon{opacity:1}
+.sb-footer{padding:16px 12px;border-top:1px solid rgba(255,255,255,0.06)}
+.sb-user{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer}
+.sb-user:hover{background:rgba(255,255,255,0.05)}
+.sb-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0;overflow:hidden}
+.sb-avatar img{width:100%;height:100%;object-fit:cover}
+.sb-user-name{font-size:12px;font-weight:600;color:#fff}
+.sb-user-role{font-size:10px;color:rgba(255,255,255,0.35)}
+
+/* ── Main ── */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{height:var(--topbar-h);background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+.topbar-greeting{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--navy)}
+.topbar-sub{font-size:12px;color:var(--text-2);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.icon-btn{width:36px;height:36px;border-radius:var(--radius-sm);background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all 0.15s}
+.icon-btn:hover{border-color:var(--saffron);background:var(--saffron-bg)}
+.notif-dot{width:7px;height:7px;background:var(--saffron);border-radius:50%;position:absolute;top:7px;right:7px;border:1.5px solid var(--card)}
+.logout-btn{padding:7px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.logout-btn:hover{background:var(--navy-2)}
+
+/* ── Content ── */
+.content{padding:24px 28px;flex:1}
+
+/* ── Welcome banner ── */
+.welcome-banner{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);
+  border-radius:var(--radius);padding:24px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;position:relative;overflow:hidden;
+}
+.wb-bg{position:absolute;right:-20px;top:-20px;width:200px;height:200px;border-radius:50%;background:rgba(255,107,0,0.08)}
+.wb-bg2{position:absolute;right:60px;bottom:-40px;width:150px;height:150px;border-radius:50%;background:rgba(245,166,35,0.06)}
+.wb-text{position:relative;z-index:1}
+.wb-eyebrow{font-size:11px;color:rgba(255,255,255,0.4);font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em}
+.wb-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:8px}
+.wb-title span{color:var(--saffron)}
+.wb-sub{font-size:13px;color:rgba(255,255,255,0.5)}
+.wb-action{position:relative;z-index:1}
+.wb-btn{padding:10px 20px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.wb-btn:hover{background:var(--saffron-2);transform:translateY(-1px)}
+
+/* ── Stats row ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:16px 18px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:14px}
+.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stat-icon svg{width:18px;height:18px}
+.stat-info{}
+.stat-value{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text);line-height:1}
+.stat-label{font-size:11px;color:var(--text-3);margin-top:3px}
+
+/* ── Grid ── */
+.row-2{display:grid;grid-template-columns:1fr 340px;gap:16px;margin-bottom:20px}
+.row-full{margin-bottom:20px}
+
+/* ── Cards ── */
+.card{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:600;color:var(--text)}
+.card-sub{font-size:11px;color:var(--text-3);margin-top:1px}
+.card-action{font-size:12px;color:var(--saffron);font-weight:500;cursor:pointer;text-decoration:none}
+.card-action:hover{text-decoration:underline}
+
+/* ── Course cards ── */
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.course-card{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all 0.2s;cursor:pointer;background:var(--card)}
+.course-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(13,27,62,0.1)}
+.course-thumb{height:120px;background:var(--navy);position:relative;overflow:hidden}
+.course-thumb img{width:100%;height:100%;object-fit:cover}
+.course-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--navy),var(--navy-2))}
+.course-cat-badge{position:absolute;top:10px;left:10px;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);color:#fff;font-size:10px;font-weight:500;padding:3px 8px;border-radius:10px}
+.course-body{padding:14px}
+.course-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.course-instructor{font-size:11px;color:var(--text-3);margin-bottom:10px}
+.progress-label{display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);margin-bottom:4px}
+.progress-label span:last-child{color:var(--saffron);font-weight:600}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--saffron),var(--gold));transition:width 0.8s ease}
+.course-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.course-status{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
+.status-enrolled{background:var(--navy-bg);color:var(--navy-2)}
+.status-completed{background:var(--green-bg);color:var(--green)}
+.course-continue{font-size:11px;color:var(--saffron);font-weight:600;cursor:pointer}
+
+/* ── Application items ── */
+.app-item{padding:12px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+.app-item:last-child{border-bottom:none}
+.app-company-logo{width:36px;height:36px;border-radius:8px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--navy-2);flex-shrink:0}
+.app-info{flex:1;min-width:0}
+.app-title{font-size:13px;font-weight:600;color:var(--text)}
+.app-company{font-size:11px;color:var(--text-3);margin-top:1px}
+.app-status-badge{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;flex-shrink:0;margin-top:2px}
+.s-pending{background:var(--gold-bg);color:var(--gold)}
+.s-reviewed{background:var(--blue-bg);color:var(--blue)}
+.s-shortlisted{background:var(--green-bg);color:var(--green)}
+.s-rejected{background:var(--red-bg);color:var(--red)}
+.s-hired{background:var(--saffron-bg);color:var(--saffron)}
+
+/* ── Certificate cards ── */
+.cert-card{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);
+  border-radius:var(--radius);padding:18px;
+  position:relative;overflow:hidden;cursor:pointer;
+  transition:transform 0.2s;border:1px solid var(--border)
+}
+.cert-card:hover{transform:translateY(-2px)}
+.cert-bg{position:absolute;right:-20px;bottom:-20px;opacity:0.06}
+.cert-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.cert-icon{width:36px;height:36px;border-radius:9px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center}
+.cert-id{font-size:9px;color:rgba(255,255,255,0.3);font-family:monospace}
+.cert-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px;line-height:1.3}
+.cert-meta{font-size:10px;color:rgba(255,255,255,0.4)}
+.cert-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08)}
+.cert-date{font-size:10px;color:rgba(255,255,255,0.35)}
+.cert-verify{font-size:10px;color:var(--saffron);font-weight:600;cursor:pointer}
+
+/* ── Profile card ── */
+.profile-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow)}
+.profile-banner{height:52px;background:linear-gradient(135deg,var(--navy),var(--navy-2));position:relative;border-radius:var(--radius) var(--radius) 0 0}
+.profile-banner-pattern{position:absolute;inset:0;opacity:0.08;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:10px 10px;border-radius:var(--radius) var(--radius) 0 0}
+.profile-avatar-wrap{padding:0 16px;margin-top:-24px;margin-bottom:10px;position:relative;z-index:2}
+.profile-avatar{width:48px;height:48px;border-radius:50%;border:3px solid var(--card);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0;background:var(--saffron);box-shadow:0 2px 8px rgba(13,27,62,0.12)}
+.profile-avatar img{width:48px;height:48px;object-fit:cover;border-radius:50%;display:block}
+.profile-body{padding:0 16px 16px}
+.profile-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
+.profile-email{font-size:11px;color:var(--text-3);margin-top:2px}
+.profile-bio{font-size:12px;color:var(--text-2);margin-top:8px;line-height:1.5}
+.profile-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.profile-tag{font-size:10px;font-weight:500;padding:3px 9px;border-radius:10px;background:var(--saffron-bg);color:var(--saffron)}
+.profile-divider{height:1px;background:var(--border);margin:12px 0}
+.profile-stat-row{display:flex;gap:0}
+.profile-stat{flex:1;text-align:center;padding:8px 4px;border-right:1px solid var(--border)}
+.profile-stat:last-child{border-right:none}
+.profile-stat-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text)}
+.profile-stat-lbl{font-size:10px;color:var(--text-3);margin-top:1px}
+.edit-profile-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;margin-top:12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text-2);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.edit-profile-btn:hover{border-color:var(--saffron);color:var(--saffron);background:var(--saffron-bg)}
+
+/* ── Empty state ── */
+.empty-state{text-align:center;padding:32px 20px}
+.empty-icon{font-size:36px;margin-bottom:10px}
+.empty-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.empty-sub{font-size:12px;color:var(--text-3)}
+.empty-btn{display:inline-block;margin-top:12px;padding:8px 18px;background:var(--saffron);color:#fff;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;border:none;font-family:'DM Sans',sans-serif}
+
+/* ── Loading skeleton ── */
+.skeleton{background:linear-gradient(90deg,var(--border) 25%,#f0f3fa 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── Animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp 0.4s ease both}
+.d1{animation-delay:0.05s}.d2{animation-delay:0.1s}.d3{animation-delay:0.15s}.d4{animation-delay:0.2s}
+
+/* ── Loading screen ── */
+.loading-overlay{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.4s}
+.loading-logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#fff;margin-bottom:8px}
+.loading-logo span{color:var(--saffron)}
+.loading-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:32px}
+.loading-bar-wrap{width:200px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden}
+.loading-bar-fill{height:100%;background:var(--saffron);border-radius:2px;animation:loadFill 1s ease forwards}
+@keyframes loadFill{from{width:0}to{width:100%}}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loader">
+  <div class="loading-logo">Skill<span>Bridge</span></div>
+  <div class="loading-sub">Loading your dashboard...</div>
+  <div class="loading-bar-wrap"><div class="loading-bar-fill"></div></div>
+</div>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="sb-brand-name">Skill<span>Bridge</span></div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="nav-group">
+        <div class="nav-group-label">My Learning</div>
+        <a class="nav-item active" href="#" onclick="showSection('home')">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Overview
+        </a>
+        <a class="nav-item" href="#" onclick="showSection('courses')">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          My Courses
+        </a>
+        <a class="nav-item" href="#" onclick="showSection('certificates')">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+          Certificates
+        </a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Jobs</div>
+        <a class="nav-item" href="#" onclick="showSection('jobs')">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Browse Jobs
+        </a>
+        <a class="nav-item" href="#" onclick="showSection('applications')">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          My Applications
+        </a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Account</div>
+        <a class="nav-item" href="#" onclick="showSection('profile')">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          My Profile
+        </a>
+      </div>
+    </nav>
+
+    <div class="sb-footer">
+      <div class="sb-user" id="sb-user">
+        <div class="sb-avatar" id="sb-avatar" style="background:var(--saffron)">S</div>
+        <div>
+          <div class="sb-user-name" id="sb-name">Student</div>
+          <div class="sb-user-role">Student</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-greeting" id="greeting">Good morning 👋</div>
+        <div class="topbar-sub">Keep learning, keep growing</div>
+      </div>
+      <div class="topbar-right">
+        <div class="icon-btn" id="notif-btn" onclick="toggleNotif()" style="position:relative">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div class="notif-dot" id="notif-dot"></div>
+        </div>
+        <!-- Notification Panel -->
+        <div id="notif-panel" style="display:none;position:absolute;top:calc(var(--topbar-h) - 8px);right:80px;width:300px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 32px rgba(13,27,62,0.12);z-index:200;overflow:hidden">
+          <div style="padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:13px;font-weight:600;color:var(--text)">Notifications</div>
+            <div style="font-size:11px;color:var(--saffron);cursor:pointer;font-weight:500" onclick="clearNotifs()">Mark all read</div>
+          </div>
+          <div id="notif-list" style="max-height:300px;overflow-y:auto">
+            <div style="padding:16px;text-align:center;font-size:12px;color:var(--text-3)">Loading...</div>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content" id="main-content">
+
+      <!-- ── OVERVIEW SECTION ── -->
+      <div id="section-home">
+
+        <!-- Welcome banner -->
+        <div class="welcome-banner fade-up d1">
+          <div class="wb-bg"></div><div class="wb-bg2"></div>
+          <div class="wb-text">
+            <div class="wb-eyebrow">Student Dashboard</div>
+            <div class="wb-title">Welcome back, <span id="wb-name">Student</span>!</div>
+            <div class="wb-sub" id="wb-sub">You have ongoing courses. Keep going!</div>
+          </div>
+          <div class="wb-action">
+            <button class="wb-btn" onclick="showSection('courses')">Continue Learning →</button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row fade-up d2">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:var(--saffron-bg)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--saffron)" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value" id="s-enrolled">0</div>
+              <div class="stat-label">Enrolled courses</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:var(--green-bg)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value" id="s-completed">0</div>
+              <div class="stat-label">Completed</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:var(--gold-bg)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value" id="s-certs">0</div>
+              <div class="stat-label">Certificates</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:var(--navy-bg)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy-2)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value" id="s-apps">0</div>
+              <div class="stat-label">Job applications</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enrollments + Profile -->
+        <div class="row-2 fade-up d3">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">My courses</div>
+                <div class="card-sub">Currently enrolled</div>
+              </div>
+              <a class="card-action" onclick="showSection('courses')">View all</a>
+            </div>
+            <div id="home-courses-list"></div>
+          </div>
+
+          <div class="profile-card">
+            <div class="profile-banner"><div class="profile-banner-pattern"></div></div>
+            <div class="profile-avatar-wrap">
+              <div class="profile-avatar" id="profile-avatar-mini" style="background:var(--saffron);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">S</div>
+            </div>
+            <div class="profile-body">
+              <div class="profile-name" id="profile-name">Student</div>
+              <div class="profile-email" id="profile-email">student@example.com</div>
+              <div class="profile-bio" id="profile-bio">No bio added yet.</div>
+              <div class="profile-tags" id="profile-tags"></div>
+              <div class="profile-divider"></div>
+              <div class="profile-stat-row">
+                <div class="profile-stat">
+                  <div class="profile-stat-val" id="ps-enrolled">0</div>
+                  <div class="profile-stat-lbl">Courses</div>
+                </div>
+                <div class="profile-stat">
+                  <div class="profile-stat-val" id="ps-certs">0</div>
+                  <div class="profile-stat-lbl">Certs</div>
+                </div>
+                <div class="profile-stat">
+                  <div class="profile-stat-val" id="ps-apps">0</div>
+                  <div class="profile-stat-lbl">Applied</div>
+                </div>
+              </div>
+              <button class="edit-profile-btn" onclick="showSection('profile')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit profile
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent applications -->
+        <div class="card fade-up d4">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Recent applications</div>
+              <div class="card-sub">Your latest job applications</div>
+            </div>
+            <a class="card-action" onclick="showSection('applications')">View all</a>
+          </div>
+          <div id="home-apps-list"></div>
+        </div>
+        <!-- Calendar + Notes Row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px" class="fade-up d4">
+          <!-- Mini Calendar -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">My Schedule</div>
+              <div style="display:flex;gap:6px">
+                <div style="width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--text-2)" onclick="calPrev()">‹</div>
+                <div style="width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--text-2)" onclick="calNext()">›</div>
+              </div>
+            </div>
+            <div style="font-size:12px;font-weight:600;color:var(--text);text-align:center;margin-bottom:10px" id="cal-month-label"></div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;padding:3px 0;text-transform:uppercase">Su</div>
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;padding:3px 0;text-transform:uppercase">Mo</div>
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;padding:3px 0;text-transform:uppercase">Tu</div>
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;padding:3px 0;text-transform:uppercase">We</div>
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;padding:3px 0;text-transform:uppercase">Th</div>
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;padding:3px 0;text-transform:uppercase">Fr</div>
+              <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;padding:3px 0;text-transform:uppercase">Sa</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px" id="cal-dates"></div>
+            <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px" id="cal-events-list"></div>
+          </div>
+
+          <!-- Notes -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">Quick Notes</div>
+              <span style="font-size:10px;color:var(--text-3)">Auto-saved</span>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:12px">
+              <input id="note-input" placeholder="Add a note, press Enter..." maxlength="200"
+                style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;background:var(--bg)"
+                onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"
+                onkeydown="if(event.key==='Enter')addNote()"/>
+              <button onclick="addNote()" style="padding:9px 14px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">Add</button>
+            </div>
+            <div id="notes-list" style="display:flex;flex-direction:column;gap:7px;max-height:230px;overflow-y:auto;scrollbar-width:thin"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── COURSES SECTION ── -->
+      <div id="section-courses" style="display:none">
+        <div class="card-head" style="margin-bottom:16px">
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text)">My Courses</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px">All your enrolled courses</div>
+          </div>
+        </div>
+        <div class="courses-grid" id="all-courses-list"></div>
+      </div>
+
+      <!-- ── CERTIFICATES SECTION ── -->
+      <div id="section-certificates" style="display:none">
+        <div class="card-head" style="margin-bottom:16px">
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text)">My Certificates</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:2px">Your earned certificates — verifiable by employers</div>
+        </div>
+        <div id="certs-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px"></div>
+      </div>
+
+      <!-- Verify Certificate Modal -->
+      <div id="verify-modal" style="display:none;position:fixed;inset:0;background:rgba(13,27,62,0.5);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center">
+        <div style="background:#fff;border-radius:16px;padding:28px;width:460px;max-width:95vw;position:relative">
+          <button onclick="closeVerifyModal()" style="position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:14px;color:var(--text-3)">✕</button>
+          <div style="text-align:center;margin-bottom:20px">
+            <div style="font-size:32px;margin-bottom:8px">🔍</div>
+            <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text)">Verify Certificate</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:4px">Share this ID with employers to verify your certificate</div>
+          </div>
+          <div id="verify-cert-details" style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;margin-bottom:16px"></div>
+          <div style="display:flex;gap:10px">
+            <button id="verify-download-btn" onclick="downloadVerifiedCert()" style="flex:1;padding:10px;background:linear-gradient(135deg,var(--gold),var(--saffron));color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">⬇ Download Certificate</button>
+            <button onclick="copyCertId()" id="copy-btn" style="padding:10px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text-2);background:#fff">Copy ID</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── JOBS SECTION ── -->
+      <div id="section-jobs" style="display:none">
+        <div class="card-head" style="margin-bottom:16px">
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text)">Browse Jobs</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:2px">Find opportunities matching your skills</div>
+        </div>
+        <!-- Search bar -->
+        <div style="display:flex;gap:10px;margin-bottom:16px">
+          <div style="flex:1;position:relative">
+            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-3)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input id="job-search" type="text" placeholder="Search jobs, companies, skills..." style="width:100%;padding:10px 12px 10px 36px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;outline:none" oninput="filterJobs()"/>
+          </div>
+          <select id="job-type-filter" onchange="filterJobs()" style="padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text-2);background:#fff;outline:none;cursor:pointer">
+            <option value="">All types</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Internship">Internship</option>
+            <option value="Contract">Contract</option>
+          </select>
+        </div>
+        <div id="jobs-list" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+
+      <!-- ── APPLICATIONS SECTION ── -->
+      <div id="section-applications" style="display:none">
+        <div class="card-head" style="margin-bottom:16px">
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text)">My Applications</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:2px">Track your job application status</div>
+        </div>
+        <div id="all-apps-list" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+
+      <!-- Rating Modal -->
+      <div id="rating-modal" style="display:none;position:fixed;inset:0;background:rgba(13,27,62,0.5);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center">
+        <div style="background:#fff;border-radius:16px;padding:28px;width:420px;max-width:95vw;position:relative">
+          <button onclick="closeRatingModal()" style="position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:14px;color:var(--text-3)">✕</button>
+          <div style="text-align:center;margin-bottom:20px">
+            <div style="font-size:28px;margin-bottom:8px">⭐</div>
+            <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text)">Rate this Course</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:4px" id="rating-course-name">Course name</div>
+          </div>
+          <!-- Star selector -->
+          <div style="display:flex;justify-content:center;gap:8px;margin-bottom:20px" id="star-row">
+            <span data-val="1" onclick="selectStar(1)" style="font-size:32px;cursor:pointer;transition:transform 0.1s;opacity:0.3" onmouseover="hoverStar(1)" onmouseleave="unhoverStar()">★</span>
+            <span data-val="2" onclick="selectStar(2)" style="font-size:32px;cursor:pointer;transition:transform 0.1s;opacity:0.3" onmouseover="hoverStar(2)" onmouseleave="unhoverStar()">★</span>
+            <span data-val="3" onclick="selectStar(3)" style="font-size:32px;cursor:pointer;transition:transform 0.1s;opacity:0.3" onmouseover="hoverStar(3)" onmouseleave="unhoverStar()">★</span>
+            <span data-val="4" onclick="selectStar(4)" style="font-size:32px;cursor:pointer;transition:transform 0.1s;opacity:0.3" onmouseover="hoverStar(4)" onmouseleave="unhoverStar()">★</span>
+            <span data-val="5" onclick="selectStar(5)" style="font-size:32px;cursor:pointer;transition:transform 0.1s;opacity:0.3" onmouseover="hoverStar(5)" onmouseleave="unhoverStar()">★</span>
+          </div>
+          <div style="text-align:center;font-size:12px;color:var(--text-3);margin-bottom:12px" id="rating-label">Select a rating</div>
+          <textarea id="rating-comment" placeholder="Share your experience (optional)..." rows="3"
+            style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;resize:none;margin-bottom:14px"
+            onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          <button onclick="submitRating()" id="rating-submit-btn"
+            style="width:100%;padding:11px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s"
+            onmouseover="this.style.background='var(--saffron-2)'" onmouseleave="this.style.background='var(--saffron)'">
+            Submit Rating
+          </button>
+          <div id="rating-msg" style="font-size:12px;text-align:center;margin-top:8px"></div>
+        </div>
+      </div>
+
+      <!-- ── PROFILE SECTION ── -->
+      <div id="section-profile" style="display:none">
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:16px">My Profile</div>
+        <div style="display:grid;grid-template-columns:280px 1fr;gap:16px;align-items:start">
+
+          <!-- Profile Card -->
+          <div class="card" style="text-align:center">
+            <div style="background:linear-gradient(135deg,var(--navy),var(--navy-2));height:70px;border-radius:10px 10px 0 0;margin:-20px -20px 0;position:relative;overflow:hidden">
+              <div style="position:absolute;inset:0;opacity:0.1;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:12px 12px"></div>
+            </div>
+            <!-- Clickable avatar with upload -->
+            <div style="position:relative;display:inline-block;margin:-30px auto 10px;cursor:pointer" onclick="document.getElementById('student-avatar-input').click()" title="Click to change photo">
+              <div id="student-profile-avatar" style="width:60px;height:60px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;background:var(--saffron);overflow:hidden"></div>
+              <div style="position:absolute;bottom:0;right:0;width:18px;height:18px;border-radius:50%;background:var(--saffron);border:2px solid #fff;display:flex;align-items:center;justify-content:center">
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+            </div>
+            <input type="file" id="student-avatar-input" accept="image/*" style="display:none" onchange="uploadStudentAvatar(this)"/>
+            <div style="font-size:10px;color:var(--text-3);margin-bottom:10px">Click to change photo</div>
+            <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text)" id="pcard-name">Student</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:2px" id="pcard-email">email@example.com</div>
+            <div style="display:inline-block;margin-top:7px;background:var(--saffron-bg);color:var(--saffron);font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">Student</div>
+            <div style="font-size:12px;color:var(--text-2);margin-top:10px;line-height:1.5;padding:0 6px" id="pcard-bio">No bio yet.</div>
+            <div style="display:flex;gap:0;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+              <div style="flex:1;text-align:center;border-right:1px solid var(--border)"><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text)" id="ps-enrolled2">0</div><div style="font-size:10px;color:var(--text-3)">Courses</div></div>
+              <div style="flex:1;text-align:center;border-right:1px solid var(--border)"><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text)" id="ps-certs2">0</div><div style="font-size:10px;color:var(--text-3)">Certs</div></div>
+              <div style="flex:1;text-align:center"><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text)" id="ps-apps2">0</div><div style="font-size:10px;color:var(--text-3)">Applied</div></div>
+            </div>
+            <button onclick="toggleStudentEdit()" style="width:100%;margin-top:12px;padding:9px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:transparent;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text-2);transition:all 0.15s" onmouseover="this.style.borderColor='var(--saffron)';this.style.color='var(--saffron)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-2)'">✏️ Edit profile</button>
+          </div>
+
+          <!-- Right column -->
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <!-- View mode -->
+            <div class="card" id="student-view-mode">
+              <div class="card-head"><div class="card-title">Account details</div></div>
+              <div id="student-details-list"></div>
+            </div>
+
+            <!-- Edit mode -->
+            <div class="card" id="student-edit-mode" style="display:none">
+              <div class="card-head">
+                <div class="card-title">Edit profile</div>
+                <button onclick="toggleStudentEdit()" style="font-size:12px;color:var(--text-3);background:none;border:none;cursor:pointer">Cancel</button>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em">Full name</label>
+                  <input id="s-edit-name" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em">Phone</label>
+                  <input id="s-edit-phone" placeholder="10-digit mobile" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px;grid-column:1/-1">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em">Bio</label>
+                  <textarea id="s-edit-bio" rows="2" placeholder="Tell us about yourself..." style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;resize:vertical" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px;grid-column:1/-1">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em">Skills (comma separated)</label>
+                  <input id="s-edit-skills" placeholder="JavaScript, React, Node.js" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end">
+                <button onclick="toggleStudentEdit()" style="padding:9px 16px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text-2)">Cancel</button>
+                <button onclick="saveStudentProfile()" style="padding:9px 18px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Save changes</button>
+              </div>
+            </div>
+
+            <!-- Change password -->
+            <div class="card">
+              <div class="card-head"><div class="card-title">Change password</div></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em">Current</label>
+                  <input type="password" id="s-pw-current" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em">New password</label>
+                  <input type="password" id="s-pw-new" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em">Confirm new</label>
+                  <input type="password" id="s-pw-confirm" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
+                <button onclick="changeStudentPassword()" style="padding:9px 18px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Update password</button>
+                <span id="s-pw-msg" style="font-size:12px"></span>
+              </div>
+            </div>
+
+            <!-- Skills & Education - full editable section -->
+            <div class="card">
+              <div class="card-head"><div class="card-title">Skills</div></div>
+              <div id="skills-display" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+              <div style="display:flex;gap:8px">
+                <input id="skill-add-input" placeholder="Add a skill (e.g. JavaScript)" style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;background:var(--bg)" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')addSkill()"/>
+                <button onclick="addSkill()" style="padding:8px 14px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Add</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title">Education</div>
+                <button onclick="toggleAddEdu()" style="font-size:11px;color:var(--saffron);font-weight:600;background:none;border:none;cursor:pointer">+ Add</button>
+              </div>
+              <!-- Add form (hidden by default) -->
+              <div id="edu-add-form" style="display:none;background:var(--bg);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+                  <div style="display:flex;flex-direction:column;gap:4px">
+                    <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">Degree / Qualification</label>
+                    <input id="edu-degree" placeholder="e.g. B.Tech Computer Science" style="padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:4px">
+                    <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">Institution</label>
+                    <input id="edu-institution" placeholder="e.g. IIT Delhi" style="padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="display:flex;flex-direction:column;gap:4px;width:120px">
+                    <label style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">Year</label>
+                    <input id="edu-year" type="number" placeholder="2024" min="1990" max="2030" style="padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+                  </div>
+                  <button onclick="addEducation()" style="margin-top:18px;padding:8px 16px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Save</button>
+                  <button onclick="toggleAddEdu()" style="margin-top:18px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text-2);background:#fff">Cancel</button>
+                </div>
+              </div>
+              <div id="education-display"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api'
+const getToken = () => localStorage.getItem('token')
+const getUser = () => JSON.parse(localStorage.getItem('user') || '{}')
+
+const apiFetch = async (url, opts={}) => {
+  const res = await fetch(API + url, {
+    headers: { 'Content-Type':'application/json', Authorization: 'Bearer ' + getToken() },
+    credentials: 'include',
+    ...opts
+  })
+  if (!res.ok) throw new Error('API ' + res.status)
+  return res.json()
+}
+
+// ── Avatar helpers ──
+const avatarColors = ['#FF6B00','#0D1B3E','#138808','#F5A623','#7B2FBE','#0891B2','#DC2626','#059669']
+const getInitials = (n='') => n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)
+const getColor = (n='') => avatarColors[n.split('').reduce((a,c)=>a+c.charCodeAt(0),0) % avatarColors.length]
+
+const avatarHTML = (user, size=34) =>
+  user?.avatar?.url
+    ? `<img src="${user.avatar.url}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover"/>`
+    : `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${getColor(user?.name||'')};display:flex;align-items:center;justify-content:center;font-size:${Math.round(size*0.36)}px;font-weight:700;color:#fff;flex-shrink:0">${getInitials(user?.name||'')}</div>`
+
+// ── Greeting ──
+const h = new Date().getHours()
+document.getElementById('greeting').textContent =
+  (h<12?'Good morning':h<17?'Good afternoon':'Good evening') + ' 👋'
+
+// ── Section switching ──
+const sections = ['home','courses','certificates','jobs','applications','profile']
+const showSection = (id) => {
+  sections.forEach(s => {
+    document.getElementById('section-'+s).style.display = s===id ? 'block' : 'none'
+  })
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'))
+  const map = {home:0,courses:1,certificates:2,jobs:3,applications:4,profile:5}
+  const items = document.querySelectorAll('.nav-item')
+  if(items[map[id]]) items[map[id]].classList.add('active')
+
+  if(id==='jobs' && !window._jobsLoaded) loadJobs()
+  if(id==='applications' && !window._appsLoaded) loadAllApplications()
+  if(id==='profile') renderProfileSection()
+  if(id==='certificates') renderCertificates()
+}
+
+// ── Status helpers ──
+const statusClass = {pending:'s-pending',reviewed:'s-reviewed',shortlisted:'s-shortlisted',rejected:'s-rejected',hired:'s-hired'}
+const formatDate = d => new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})
+const timeAgo = d => {
+  const diff = Date.now()-new Date(d).getTime()
+  const m=Math.floor(diff/60000)
+  if(m<1) return 'just now'
+  if(m<60) return m+'m ago'
+  const hh=Math.floor(m/60)
+  if(hh<24) return hh+'h ago'
+  return Math.floor(hh/24)+'d ago'
+}
+
+// ── Render course card ──
+const courseCardHTML = (enrollment) => {
+  const course = enrollment.course || enrollment
+  const progress = enrollment.progressPercent || 0
+  const completed = enrollment.isCompleted
+  const thumb = course.thumbnail?.url
+  const thumbHTML = thumb
+    ? `<img src="${thumb}" alt="${course.title}"/>`
+    : `<div class="course-thumb-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>`
+
+  const rateBtn = completed
+    ? `<button onclick="event.stopPropagation();openRatingModal('${course._id}','${(course.title||'').replace(/'/g,"&#39;")}')"
+        style="background:none;border:1px solid var(--gold);color:var(--gold);border-radius:6px;padding:3px 10px;font-size:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s"
+        onmouseover="this.style.background='var(--gold-bg)'" onmouseleave="this.style.background='none'">
+        ★ Rate
+      </button>`
+    : ''
+
+  return `
+    <div class="course-card" onclick="window.location.href='course-detail.html?id=${course._id}'">
+      <div class="course-thumb">
+        ${thumbHTML}
+        <div class="course-cat-badge">${course.category||'Course'}</div>
+      </div>
+      <div class="course-body">
+        <div class="course-title">${course.title}</div>
+        <div class="course-instructor">by ${course.instructor?.name||'Instructor'}</div>
+        <div class="progress-label">
+          <span>Progress</span>
+          <span>${progress}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${progress}%"></div>
+        </div>
+        <div class="course-footer">
+          <span class="course-status ${completed?'status-completed':'status-enrolled'}">${completed?'✓ Completed':'In progress'}</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            ${rateBtn}
+            <span class="course-continue">${completed?'Review →':'Continue →'}</span>
+          </div>
+        </div>
+      </div>
+    </div>`
+}
+
+// ── Render app item ──
+const appItemHTML = (app) => {
+  const job = app.job || {}
+  const initials = (job.company?.name||'J').slice(0,2).toUpperCase()
+  return `
+    <div class="app-item">
+      <div class="app-company-logo">${initials}</div>
+      <div class="app-info">
+        <div class="app-title">${job.title||'Job title'}</div>
+        <div class="app-company">${job.company?.name||''} · ${job.company?.location||job.location||''}</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:3px">${timeAgo(app.createdAt)}</div>
+      </div>
+      <span class="app-status-badge ${statusClass[app.status]||'s-pending'}">${app.status?.charAt(0).toUpperCase()+app.status?.slice(1)||'Pending'}</span>
+    </div>`
+}
+
+// ── Load data ──
+let allEnrollments = []
+let allApplications = []
+
+const loadDashboard = async () => {
+  const user = getUser()
+
+  // Set user info in UI
+  document.getElementById('wb-name').textContent = user.name?.split(' ')[0] || 'Student'
+  document.getElementById('sb-name').textContent = user.name || 'Student'
+  document.getElementById('profile-name').textContent = user.name || 'Student'
+  document.getElementById('profile-email').textContent = user.email || ''
+
+  // Avatar
+  const avatarEl = document.getElementById('sb-avatar')
+  const avatarMini = document.getElementById('profile-avatar-mini')
+  if(user.avatar?.url) {
+    const imgTag = `<img src="${user.avatar.url}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;display:block"/>`
+    avatarEl.innerHTML = imgTag
+    avatarEl.style.background = 'none'; avatarEl.style.fontSize = '0'; avatarEl.style.padding = '0'
+    avatarMini.innerHTML = `<img src="${user.avatar.url}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;display:block"/>`
+    avatarMini.style.background = 'none'; avatarMini.style.fontSize = '0'
+  } else {
+    const color = getColor(user.name||'')
+    const initials = getInitials(user.name||'S')
+    avatarEl.textContent = initials; avatarEl.style.background = color; avatarEl.style.fontSize = ''
+    avatarMini.textContent = initials; avatarMini.style.background = color; avatarMini.style.fontSize = '14px'
+  }
+
+  try {
+    // Load enrollments and applications in parallel
+    const [enrollRes, appRes] = await Promise.all([
+      apiFetch('/enrollments/my-enrollments'),
+      apiFetch('/applications/my-applications')
+    ])
+
+    allEnrollments = enrollRes.enrollments || []
+    allApplications = appRes.applications || []
+
+    const completed = allEnrollments.filter(e=>e.isCompleted).length
+    const certs = allEnrollments.filter(e=>e.certificate?.issued).length
+
+    // Stats
+    document.getElementById('s-enrolled').textContent = allEnrollments.length
+    document.getElementById('s-completed').textContent = completed
+    document.getElementById('s-certs').textContent = certs
+    document.getElementById('s-apps').textContent = allApplications.length
+    document.getElementById('ps-enrolled').textContent = allEnrollments.length
+    document.getElementById('ps-certs').textContent = certs
+    document.getElementById('ps-apps').textContent = allApplications.length
+
+    // Welcome sub
+    document.getElementById('wb-sub').textContent =
+      allEnrollments.length > 0
+        ? `You have ${allEnrollments.length} course${allEnrollments.length>1?'s':''} in progress. Keep going!`
+        : 'Browse courses and start your first lesson today!'
+
+    // Profile bio & skills
+    if(user.bio) document.getElementById('profile-bio').textContent = user.bio
+    const tagsEl = document.getElementById('profile-tags')
+    if(user.skills?.length) {
+      tagsEl.innerHTML = user.skills.map(s=>`<span class="profile-tag">${s}</span>`).join('')
+    }
+
+    // Home courses list (last 3)
+    const homeCoursesEl = document.getElementById('home-courses-list')
+    if(!allEnrollments.length) {
+      homeCoursesEl.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">No courses yet</div><div class="empty-sub">Browse our catalog and enroll in your first course</div><button class="empty-btn" onclick="showSection('jobs')">Browse courses</button></div>`
+    } else {
+      homeCoursesEl.innerHTML = `<div class="courses-grid">${allEnrollments.slice(0,3).map(courseCardHTML).join('')}</div>`
+    }
+
+    // All courses
+    const allCoursesEl = document.getElementById('all-courses-list')
+    if(!allEnrollments.length) {
+      allCoursesEl.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📚</div><div class="empty-title">No enrollments yet</div><div class="empty-sub">Browse courses to start learning</div></div>`
+    } else {
+      allCoursesEl.innerHTML = allEnrollments.map(courseCardHTML).join('')
+    }
+
+    // Home apps list (last 3)
+    const homeAppsEl = document.getElementById('home-apps-list')
+    if(!allApplications.length) {
+      homeAppsEl.innerHTML = `<div class="empty-state"><div class="empty-icon">💼</div><div class="empty-title">No applications yet</div><div class="empty-sub">Apply for jobs matching your skills</div><button class="empty-btn" onclick="showSection('jobs')">Browse jobs</button></div>`
+    } else {
+      homeAppsEl.innerHTML = allApplications.slice(0,3).map(appItemHTML).join('')
+    }
+
+  } catch(err) {
+    console.error('Dashboard error:', err)
+  }
+}
+
+// ── Load jobs ──
+let allJobs = []
+const loadJobs = async () => {
+  window._jobsLoaded = true
+  const el = document.getElementById('jobs-list')
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-3);font-size:13px">Loading jobs...</div>'
+  try {
+    const data = await apiFetch('/jobs?limit=20')
+    allJobs = data.jobs || []
+    renderJobs(allJobs)
+  } catch(err) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--red);font-size:13px">Failed to load jobs</div>'
+  }
+}
+
+const renderJobs = (jobs) => {
+  const el = document.getElementById('jobs-list')
+  if(!jobs.length) {
+    el.innerHTML = `<div class="empty-state card"><div class="empty-icon">💼</div><div class="empty-title">No jobs found</div><div class="empty-sub">Try different filters</div></div>`
+    return
+  }
+  el.innerHTML = jobs.map(job => `
+    <div class="card" style="cursor:pointer;transition:all 0.2s" onmouseenter="this.style.borderColor='var(--saffron)'" onmouseleave="this.style.borderColor='var(--border)'">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
+          <div style="width:44px;height:44px;border-radius:10px;background:var(--navy-bg);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--navy-2);flex-shrink:0">${(job.company?.name||'J').slice(0,2).toUpperCase()}</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:600;color:var(--text)">${job.title}</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px">${job.company?.name||''} · ${job.location}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+              <span style="font-size:10px;background:var(--navy-bg);color:var(--navy-2);padding:2px 8px;border-radius:10px;font-weight:500">${job.jobType}</span>
+              <span style="font-size:10px;background:var(--saffron-bg);color:var(--saffron);padding:2px 8px;border-radius:10px;font-weight:500">${job.workMode}</span>
+              ${job.skillIndiaScheme!=='None'?`<span style="font-size:10px;background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:10px;font-weight:500">${job.skillIndiaScheme}</span>`:''}
+            </div>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:13px;font-weight:600;color:var(--green)">${job.salaryDisplay||'Salary N/A'}</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:3px">Deadline: ${formatDate(job.applicationDeadline)}</div>
+          <button onclick="applyForJob('${job._id}', this)" style="margin-top:8px;padding:7px 16px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Apply now</button>
+        </div>
+      </div>
+    </div>`).join('')
+}
+
+const filterJobs = () => {
+  const q = document.getElementById('job-search').value.toLowerCase()
+  const type = document.getElementById('job-type-filter').value
+  const filtered = allJobs.filter(j => {
+    const matchQ = !q || j.title.toLowerCase().includes(q) || j.company?.name?.toLowerCase().includes(q)
+    const matchType = !type || j.jobType === type
+    return matchQ && matchType
+  })
+  renderJobs(filtered)
+}
+
+// ── Apply for job ──
+const applyForJob = async (jobId, btn) => {
+  const coverLetter = prompt('Cover letter (optional — press OK to skip):') || 'I am interested in this position and would like to apply.'
+  if(coverLetter === null) return
+  btn.disabled = true
+  btn.textContent = 'Applying...'
+  try {
+    const res = await fetch(API + '/applications/' + jobId, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + getToken() },
+      credentials: 'include',
+      body: JSON.stringify({ coverLetter })
+    })
+    const data = await res.json()
+    if(data.success) {
+      btn.textContent = '✓ Applied'
+      btn.style.background = 'var(--green)'
+      document.getElementById('s-apps').textContent = parseInt(document.getElementById('s-apps').textContent) + 1
+    } else {
+      btn.textContent = data.message?.includes('already') ? '✓ Applied' : 'Try again'
+      btn.style.background = data.message?.includes('already') ? 'var(--green)' : 'var(--red)'
+      btn.disabled = false
+    }
+  } catch(err) {
+    btn.textContent = 'Error'
+    btn.disabled = false
+  }
+}
+
+// ── Load all applications ──
+const loadAllApplications = async () => {
+  window._appsLoaded = true
+  const el = document.getElementById('all-apps-list')
+  if(!allApplications.length) {
+    el.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">📄</div><div class="empty-title">No applications yet</div><div class="empty-sub">Apply for jobs matching your skills</div><button class="empty-btn" onclick="showSection('jobs')">Browse jobs</button></div></div>`
+    return
+  }
+  el.innerHTML = allApplications.map(app => {
+    const job = app.job || {}
+    return `
+      <div class="card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+          <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
+            <div style="width:44px;height:44px;border-radius:10px;background:var(--navy-bg);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--navy-2);flex-shrink:0">${(job.company?.name||'J').slice(0,2).toUpperCase()}</div>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--text)">${job.title||'Position'}</div>
+              <div style="font-size:12px;color:var(--text-3);margin-top:2px">${job.company?.name||''} · ${job.company?.location||''}</div>
+              <div style="font-size:11px;color:var(--text-3);margin-top:4px">Applied ${timeAgo(app.createdAt)}</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <span class="app-status-badge ${statusClass[app.status]||'s-pending'}" style="display:inline-block;margin-bottom:6px">${app.status?.charAt(0).toUpperCase()+app.status?.slice(1)}</span>
+            <div style="font-size:10px;color:var(--text-3)">${app.statusHistory?.length||1} status update${(app.statusHistory?.length||1)>1?'s':''}</div>
+          </div>
+        </div>
+        <!-- Status timeline -->
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:0;overflow-x:auto">
+          ${(app.statusHistory||[{status:'pending',note:'Applied'}]).map((h,i,arr)=>`
+            <div style="display:flex;align-items:center;gap:0;flex-shrink:0">
+              <div style="text-align:center">
+                <div style="width:24px;height:24px;border-radius:50%;background:${i===arr.length-1?'var(--saffron)':'var(--green)'};display:flex;align-items:center;justify-content:center;margin:0 auto">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div style="font-size:9px;color:var(--text-3);margin-top:3px;text-transform:capitalize;max-width:60px">${h.status}</div>
+              </div>
+              ${i<arr.length-1?'<div style="width:30px;height:1px;background:var(--green);margin:0 2px;margin-bottom:14px"></div>':''}
+            </div>`).join('')}
+        </div>
+      </div>`
+  }).join('')
+}
+
+// ── Certificates ──
+let currentVerifyCert = null
+
+const renderCertificates = () => {
+  const certsEl = document.getElementById('certs-grid')
+  const issued = allEnrollments.filter(e=>e.certificate?.issued)
+  if(!issued.length) {
+    certsEl.innerHTML = `<div class="empty-state card" style="grid-column:1/-1"><div class="empty-icon">🎓</div><div class="empty-title">No certificates yet</div><div class="empty-sub">Complete a course to earn your first certificate</div><button class="empty-btn" onclick="showSection('courses')">View courses</button></div>`
+    return
+  }
+  certsEl.innerHTML = issued.map(e => {
+    const safeE = JSON.stringify(e).replace(/"/g,'&quot;')
+    return `
+    <div style="background:linear-gradient(135deg,var(--navy),var(--navy-2));border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;transition:transform 0.2s;border:1px solid rgba(255,255,255,0.06)" onmouseover="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform='translateY(0)'">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;display:flex">
+        <div style="flex:1;background:var(--saffron)"></div>
+        <div style="flex:1;background:#fff;opacity:0.3"></div>
+        <div style="flex:1;background:var(--green)"></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;margin-top:6px">
+        <div style="width:36px;height:36px;border-radius:9px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+        </div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.3);font-family:monospace">${e.certificate.certificateId}</div>
+      </div>
+      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:3px;line-height:1.3">${e.course?.title||'Course'}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:14px">${e.course?.category||''} · SkillBridge India</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08)">
+        <div style="font-size:10px;color:rgba(255,255,255,0.3)">Issued ${formatDate(e.certificate.issuedAt)}</div>
+        <div style="display:flex;gap:8px">
+          <button onclick="openVerifyModal(${safeE})" style="padding:5px 12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseleave="this.style.background='rgba(255,255,255,0.1)'">🔍 Verify</button>
+          <button onclick="downloadCertFromCard(${safeE})" style="padding:5px 12px;background:var(--saffron);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif">⬇ Download</button>
+        </div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+const openVerifyModal = (enrollment) => {
+  currentVerifyCert = enrollment
+  const cert = enrollment.certificate
+  document.getElementById('verify-cert-details').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:0">
+      ${[
+        ['Certificate ID', `<span style="font-family:monospace;font-weight:700;color:var(--navy)">${cert.certificateId}</span>`],
+        ['Course', enrollment.course?.title||'—'],
+        ['Issued to', getUser().name||'Student'],
+        ['Issue date', formatDate(cert.issuedAt)],
+      ].map(([l,v])=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">${l}</span>
+          <span style="font-size:13px;color:var(--text);text-align:right">${v}</span>
+        </div>`).join('')}
+      <div style="background:var(--green-bg);border:1px solid rgba(19,136,8,0.2);border-radius:8px;padding:10px;display:flex;align-items:center;gap:8px;margin-top:10px">
+        <span style="font-size:18px">✅</span>
+        <div><div style="font-size:12px;font-weight:600;color:var(--green)">Verified Certificate</div><div style="font-size:11px;color:var(--text-3)">Issued by SkillBridge India</div></div>
+      </div>
+    </div>`
+  document.getElementById('verify-modal').style.display = 'flex'
+}
+
+const closeVerifyModal = () => {
+  document.getElementById('verify-modal').style.display = 'none'
+  currentVerifyCert = null
+}
+
+const copyCertId = () => {
+  if(!currentVerifyCert) return
+  navigator.clipboard.writeText(currentVerifyCert.certificate.certificateId)
+  const btn = document.getElementById('copy-btn')
+  btn.textContent = '✓ Copied!'
+  btn.style.color = 'var(--green)'
+  setTimeout(() => { btn.textContent = 'Copy ID'; btn.style.color = 'var(--text-2)' }, 2000)
+}
+
+const downloadVerifiedCert = () => { if(currentVerifyCert) downloadCertFromCard(currentVerifyCert) }
+
+document.getElementById('verify-modal').addEventListener('click', e => {
+  if(e.target === e.currentTarget) closeVerifyModal()
+})
+
+const downloadCertFromCard = (enrollment) => {
+  window._pendingCertDownload = enrollment
+  window.location.href = `course-detail.html?id=${enrollment.course?._id}&download=cert`
+}
+
+// ── Profile section ────────────────────────────────────────
+const renderProfileSection = () => {
+  const user = getUser()
+
+  // Profile card
+  document.getElementById('pcard-name').textContent = user.name || 'Student'
+  document.getElementById('pcard-email').textContent = user.email || ''
+  document.getElementById('pcard-bio').textContent = user.bio || 'No bio yet.'
+  document.getElementById('ps-enrolled2').textContent = allEnrollments.length
+  document.getElementById('ps-certs2').textContent = allEnrollments.filter(e=>e.certificate?.issued).length
+  document.getElementById('ps-apps2').textContent = allApplications.length
+
+  // Avatar in profile card
+  const avatarEl = document.getElementById('student-profile-avatar')
+  if(user.avatar?.url) {
+    avatarEl.innerHTML = `<img src="${user.avatar.url}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;display:block"/>`
+    avatarEl.style.background = 'none'; avatarEl.style.fontSize = '0'
+  } else {
+    avatarEl.textContent = getInitials(user.name||'S')
+    avatarEl.style.background = getColor(user.name||'S')
+    avatarEl.style.fontSize = '20px'
+  }
+
+  // Pre-fill edit fields
+  document.getElementById('s-edit-name').value = user.name || ''
+  document.getElementById('s-edit-phone').value = user.phone || ''
+  document.getElementById('s-edit-bio').value = user.bio || ''
+  document.getElementById('s-edit-skills').value = (user.skills||[]).join(', ')
+
+  // Details list
+  const detailsEl = document.getElementById('student-details-list')
+  const fields = [
+    ['Full name', user.name||'—'], ['Email', user.email||'—'],
+    ['Phone', user.phone||'Not added'], ['Bio', user.bio||'Not added'],
+    ['Member since', user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : '—'],
+    ['Email verified', user.isEmailVerified ? '✅ Verified' : '⚠️ Not verified'],
+  ]
+  detailsEl.innerHTML = fields.map(([l,v])=>`
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em">${l}</div>
+      <div style="font-size:13px;color:var(--text);text-align:right;max-width:240px">${v}</div>
+    </div>`).join('')
+
+  // Render skills
+  renderSkillsDisplay()
+  // Render education
+  renderEducationDisplay()
+}
+
+// ── Skills ─────────────────────────────────────────────────
+const renderSkillsDisplay = () => {
+  const user = getUser()
+  const el = document.getElementById('skills-display')
+  if(!el) return
+  const skills = user.skills || []
+  if(!skills.length) {
+    el.innerHTML = '<span style="font-size:12px;color:var(--text-3)">No skills added yet. Add your first skill below.</span>'
+    return
+  }
+  el.innerHTML = skills.map((s,i) => `
+    <div style="display:inline-flex;align-items:center;gap:5px;background:var(--saffron-bg);color:var(--saffron);font-size:11px;font-weight:500;padding:4px 10px;border-radius:10px">
+      ${s}
+      <span onclick="removeSkill(${i})" style="cursor:pointer;opacity:0.6;font-size:13px;line-height:1;margin-left:2px" onmouseover="this.style.opacity='1'" onmouseleave="this.style.opacity='0.6'">×</span>
+    </div>`).join('')
+}
+
+const addSkill = async () => {
+  const input = document.getElementById('skill-add-input')
+  const skill = input.value.trim()
+  if(!skill) return
+  const user = getUser()
+  const skills = [...(user.skills || []), skill]
+  await saveSkills(skills)
+  input.value = ''
+}
+
+const removeSkill = async (idx) => {
+  const user = getUser()
+  const skills = (user.skills || []).filter((_,i) => i !== idx)
+  await saveSkills(skills)
+}
+
+const saveSkills = async (skills) => {
+  try {
+    const res = await fetch(API+'/users/profile', {
+      method:'PUT', headers:{'Content-Type':'application/json',Authorization:'Bearer '+getToken()},
+      credentials:'include', body:JSON.stringify({skills})
+    })
+    const data = await res.json()
+    if(data.success) {
+      const user = getUser(); user.skills = skills
+      localStorage.setItem('user', JSON.stringify(user))
+      renderSkillsDisplay()
+      // Update skill tags on overview card too
+      const tagsEl = document.getElementById('profile-tags')
+      if(tagsEl) tagsEl.innerHTML = skills.map(s=>`<span class="profile-tag">${s}</span>`).join('')
+    }
+  } catch(e) {}
+}
+
+// ── Education ──────────────────────────────────────────────
+const renderEducationDisplay = () => {
+  const user = getUser()
+  const el = document.getElementById('education-display')
+  if(!el) return
+  const education = user.education || []
+  if(!education.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text-3);padding:8px 0">No education added yet. Click + Add above.</div>'
+    return
+  }
+  el.innerHTML = education.map((e,i) => `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--text)">${e.degree}</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:2px">${e.institution} · ${e.year}</div>
+      </div>
+      <button onclick="removeEducation(${i})" style="background:none;border:none;font-size:16px;color:var(--text-3);cursor:pointer;padding:2px 4px" onmouseover="this.style.color='var(--red)'" onmouseleave="this.style.color='var(--text-3)'">×</button>
+    </div>`).join('')
+}
+
+const toggleAddEdu = () => {
+  const form = document.getElementById('edu-add-form')
+  form.style.display = form.style.display === 'none' ? 'block' : 'none'
+}
+
+const addEducation = async () => {
+  const degree = document.getElementById('edu-degree').value.trim()
+  const institution = document.getElementById('edu-institution').value.trim()
+  const year = parseInt(document.getElementById('edu-year').value)
+  if(!degree || !institution) { alert('Please fill degree and institution'); return }
+  const user = getUser()
+  const education = [...(user.education || []), { degree, institution, year: year || new Date().getFullYear() }]
+  await saveEducation(education)
+  document.getElementById('edu-degree').value = ''
+  document.getElementById('edu-institution').value = ''
+  document.getElementById('edu-year').value = ''
+  toggleAddEdu()
+}
+
+const removeEducation = async (idx) => {
+  const user = getUser()
+  const education = (user.education || []).filter((_,i) => i !== idx)
+  await saveEducation(education)
+}
+
+const saveEducation = async (education) => {
+  try {
+    const res = await fetch(API+'/users/profile', {
+      method:'PUT', headers:{'Content-Type':'application/json',Authorization:'Bearer '+getToken()},
+      credentials:'include', body:JSON.stringify({education})
+    })
+    const data = await res.json()
+    if(data.success) {
+      const user = getUser(); user.education = education
+      localStorage.setItem('user', JSON.stringify(user))
+      renderEducationDisplay()
+    }
+  } catch(e) {}
+}
+
+const toggleStudentEdit = () => {
+  const view = document.getElementById('student-view-mode')
+  const edit = document.getElementById('student-edit-mode')
+  const isEditing = edit.style.display !== 'none'
+  view.style.display = isEditing ? 'block' : 'none'
+  edit.style.display = isEditing ? 'none' : 'block'
+}
+
+const saveStudentProfile = async () => {
+  const name = document.getElementById('s-edit-name').value.trim()
+  const phone = document.getElementById('s-edit-phone').value.trim()
+  const bio = document.getElementById('s-edit-bio').value.trim()
+  const skills = document.getElementById('s-edit-skills').value.split(',').map(s=>s.trim()).filter(Boolean)
+  if(!name) { alert('Name is required'); return }
+  try {
+    const res = await fetch(API+'/users/profile', {
+      method:'PUT', headers:{'Content-Type':'application/json',Authorization:'Bearer '+getToken()},
+      credentials:'include', body: JSON.stringify({name,phone,bio,skills})
+    })
+    const data = await res.json()
+    if(data.success) {
+      const user = getUser()
+      Object.assign(user,{name,phone,bio,skills})
+      localStorage.setItem('user',JSON.stringify(user))
+      document.getElementById('sb-name').textContent = name
+      renderProfileSection()
+      toggleStudentEdit()
+    } else { alert(data.message||'Failed') }
+  } catch(e) { alert('Server error') }
+}
+
+const changeStudentPassword = async () => {
+  const currentPassword = document.getElementById('s-pw-current').value
+  const newPassword = document.getElementById('s-pw-new').value
+  const confirm = document.getElementById('s-pw-confirm').value
+  const msg = document.getElementById('s-pw-msg')
+  if(!currentPassword||!newPassword){msg.textContent='⚠️ Fill all fields';msg.style.color='var(--red)';return}
+  if(newPassword!==confirm){msg.textContent='⚠️ Passwords do not match';msg.style.color='var(--red)';return}
+  if(newPassword.length<6){msg.textContent='⚠️ Min 6 characters';msg.style.color='var(--red)';return}
+  try {
+    const res = await fetch(API+'/auth/password/update',{
+      method:'PUT', headers:{'Content-Type':'application/json',Authorization:'Bearer '+getToken()},
+      credentials:'include', body:JSON.stringify({currentPassword,newPassword})
+    })
+    const data = await res.json()
+    if(data.success){
+      msg.textContent='✅ Password updated!'; msg.style.color='var(--green)'
+      document.getElementById('s-pw-current').value=''
+      document.getElementById('s-pw-new').value=''
+      document.getElementById('s-pw-confirm').value=''
+    } else {msg.textContent='⚠️ '+(data.message||'Failed');msg.style.color='var(--red)'}
+  } catch(e){msg.textContent='⚠️ Server error';msg.style.color='var(--red)'}
+}
+
+const uploadStudentAvatar = async (input) => {
+  const file = input.files[0]; if(!file) return
+  if(file.size > 2*1024*1024){alert('Max 2MB');input.value='';return}
+  // Instant preview
+  const reader = new FileReader()
+  reader.onload = e => {
+    const avatarEl = document.getElementById('student-profile-avatar')
+    avatarEl.innerHTML = `<img src="${e.target.result}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;display:block"/>`
+    avatarEl.style.background='none'; avatarEl.style.fontSize='0'
+    const sbAv = document.getElementById('sb-avatar')
+    if(sbAv){sbAv.innerHTML=`<img src="${e.target.result}" style="width:34px;height:34px;border-radius:50%;object-fit:cover"/>`;sbAv.style.background='none';sbAv.style.fontSize='0'}
+  }
+  reader.readAsDataURL(file)
+  // Upload
+  const formData = new FormData(); formData.append('avatar', file)
+  try {
+    const res = await fetch(API+'/users/avatar',{method:'PUT',headers:{Authorization:'Bearer '+getToken()},credentials:'include',body:formData})
+    const data = await res.json()
+    if(data.success){const user=getUser();user.avatar=data.avatar;localStorage.setItem('user',JSON.stringify(user))}
+    else alert(data.message||'Upload failed')
+  } catch(e){alert('Upload failed')}
+  input.value=''
+}
+
+// ── Rating modal ───────────────────────────────────────────
+let currentRatingCourseId = null
+let selectedRating = 0
+const ratingLabels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent']
+
+const openRatingModal = (courseId, courseName) => {
+  currentRatingCourseId = courseId
+  selectedRating = 0
+  document.getElementById('rating-course-name').textContent = courseName
+  document.getElementById('rating-comment').value = ''
+  document.getElementById('rating-msg').textContent = ''
+  document.getElementById('rating-label').textContent = 'Select a rating'
+  const btn = document.getElementById('rating-submit-btn')
+  btn.textContent = 'Submit Rating'
+  btn.disabled = false
+  btn.style.background = 'var(--saffron)'
+  document.querySelectorAll('#star-row span').forEach(s => {
+    s.style.opacity = '0.3'; s.style.color = 'var(--gold)'; s.style.transform = 'scale(1)'
+  })
+  document.getElementById('rating-modal').style.display = 'flex'
+}
+
+const closeRatingModal = () => {
+  document.getElementById('rating-modal').style.display = 'none'
+  currentRatingCourseId = null
+  selectedRating = 0
+}
+
+document.getElementById('rating-modal').addEventListener('click', e => {
+  if(e.target === e.currentTarget) closeRatingModal()
+})
+
+const updateStarDisplay = (val, isSelected=false) => {
+  document.querySelectorAll('#star-row span').forEach(s => {
+    const sv = parseInt(s.dataset.val)
+    s.style.opacity = sv <= val ? '1' : '0.25'
+    s.style.color = sv <= val ? 'var(--gold)' : 'var(--text-3)'
+    s.style.transform = sv === val && isSelected ? 'scale(1.2)' : 'scale(1)'
+  })
+}
+
+const hoverStar = (val) => {
+  if(selectedRating === 0) updateStarDisplay(val)
+  document.getElementById('rating-label').textContent = ratingLabels[val]
+}
+
+const unhoverStar = () => {
+  if(selectedRating === 0) {
+    updateStarDisplay(0)
+    document.getElementById('rating-label').textContent = 'Select a rating'
+  } else {
+    updateStarDisplay(selectedRating, true)
+    document.getElementById('rating-label').textContent = `${ratingLabels[selectedRating]} — ${selectedRating}/5`
+  }
+}
+
+const selectStar = (val) => {
+  selectedRating = val
+  updateStarDisplay(val, true)
+  document.getElementById('rating-label').textContent = `${ratingLabels[val]} — ${val}/5 ★`
+}
+
+const submitRating = async () => {
+  if(!selectedRating) {
+    document.getElementById('rating-msg').textContent = '⚠️ Please select a star rating first'
+    document.getElementById('rating-msg').style.color = 'var(--red)'
+    return
+  }
+  const comment = document.getElementById('rating-comment').value.trim() || 'Great course!'
+  const btn = document.getElementById('rating-submit-btn')
+  btn.textContent = 'Submitting...'
+  btn.disabled = true
+
+  try {
+    const res = await apiFetch(`/courses/${currentRatingCourseId}/reviews`, {
+      method: 'POST',
+      body: JSON.stringify({ rating: selectedRating, comment })
+    })
+    if(res.success) {
+      document.getElementById('rating-msg').textContent = '✅ Thank you! Your review has been submitted.'
+      document.getElementById('rating-msg').style.color = 'var(--green)'
+      btn.textContent = '✓ Submitted!'
+      btn.style.background = 'var(--green)'
+      setTimeout(closeRatingModal, 1800)
+    } else {
+      document.getElementById('rating-msg').textContent = '⚠️ ' + (res.message || 'Could not submit review')
+      document.getElementById('rating-msg').style.color = 'var(--red)'
+      btn.textContent = 'Submit Rating'
+      btn.disabled = false
+    }
+  } catch(e) {
+    document.getElementById('rating-msg').textContent = '⚠️ Server error — try again'
+    document.getElementById('rating-msg').style.color = 'var(--red)'
+    btn.textContent = 'Submit Rating'
+    btn.disabled = false
+  }
+}
+
+// ── Notifications ──────────────────────────────────────────
+let notifOpen = false
+
+const toggleNotif = () => {
+  const panel = document.getElementById('notif-panel')
+  notifOpen = !notifOpen
+  panel.style.display = notifOpen ? 'block' : 'none'
+  if(notifOpen) buildNotifPanel()
+}
+
+document.addEventListener('click', e => {
+  if(notifOpen && !e.target.closest('#notif-btn') && !e.target.closest('#notif-panel')){
+    document.getElementById('notif-panel').style.display = 'none'
+    notifOpen = false
+  }
+})
+
+const buildNotifPanel = () => {
+  const el = document.getElementById('notif-list')
+  const items = [
+    ...allEnrollments.slice(0,3).map(e=>({icon:'📚',text:`Enrolled in <b>${e.course?.title||'a course'}</b>`,time:e.createdAt,color:'var(--saffron)'})),
+    ...allApplications.slice(0,3).map(a=>({icon:'💼',text:`Applied for <b>${a.job?.title||'a job'}</b> — <b>${a.status}</b>`,time:a.createdAt,color:'var(--navy-2)'})),
+  ].sort((a,b)=>new Date(b.time)-new Date(a.time)).slice(0,6)
+
+  if(!items.length){
+    el.innerHTML='<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3)">No activity yet</div>'; return
+  }
+  el.innerHTML = items.map(item=>`
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border)">
+      <div style="width:26px;height:26px;border-radius:50%;background:${item.color}15;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">${item.icon}</div>
+      <div style="flex:1"><div style="font-size:12px;color:var(--text);line-height:1.4">${item.text}</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">${timeAgo(item.time)}</div></div>
+    </div>`).join('')
+}
+
+const clearNotifs = () => {
+  document.getElementById('notif-dot').style.display = 'none'
+  document.getElementById('notif-list').innerHTML = '<div style="padding:16px;text-align:center;font-size:12px;color:var(--text-3)">All caught up ✓</div>'
+}
+
+// ── Calendar ───────────────────────────────────────────────
+let calDate = new Date()
+
+const upcomingSchedule = [
+  { label: 'Complete your next lesson', color: 'var(--saffron)' },
+  { label: 'Check new job postings', color: 'var(--navy-2)' },
+  { label: 'Review course progress', color: 'var(--green)' },
+]
+
+const renderCalendar = () => {
+  const year = calDate.getFullYear()
+  const month = calDate.getMonth()
+  const today = new Date()
+  const isCurrent = today.getFullYear() === year && today.getMonth() === month
+
+  document.getElementById('cal-month-label').textContent =
+    calDate.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
+
+  const firstDay = new Date(year, month, 1).getDay()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const el = document.getElementById('cal-dates')
+  el.innerHTML = ''
+
+  for(let i = 0; i < firstDay; i++) el.innerHTML += `<div></div>`
+
+  for(let d = 1; d <= daysInMonth; d++) {
+    const isToday = isCurrent && d === today.getDate()
+    el.innerHTML += `<div style="
+      font-size:11px;text-align:center;padding:5px 2px;border-radius:6px;
+      background:${isToday ? 'var(--saffron)' : 'transparent'};
+      color:${isToday ? '#fff' : 'var(--text-2)'};
+      font-weight:${isToday ? '700' : '400'};
+    ">${d}</div>`
+  }
+
+  const evEl = document.getElementById('cal-events-list')
+  const todayStr = today.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long' })
+  evEl.innerHTML = `
+    <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:7px">${todayStr}</div>
+    ${upcomingSchedule.map(item => `
+      <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+        <div style="width:5px;height:5px;border-radius:50%;background:${item.color};flex-shrink:0"></div>
+        <span style="font-size:11px;color:var(--text-2)">${item.label}</span>
+      </div>`).join('')}`
+}
+
+const calPrev = () => { calDate.setMonth(calDate.getMonth() - 1); renderCalendar() }
+const calNext = () => { calDate.setMonth(calDate.getMonth() + 1); renderCalendar() }
+
+// ── Notes ──────────────────────────────────────────────────
+const noteColors = [
+  {bg:'#FFF3EA',bar:'#FF6B00'},{bg:'#EEF2FA',bar:'#1A2F5E'},
+  {bg:'#EAF6EA',bar:'#138808'},{bg:'#FEF6E4',bar:'#E8930A'},{bg:'#F3EEFF',bar:'#7B2FBE'}
+]
+let noteColorIdx = 0
+
+const loadNotes = () => {
+  const saved = JSON.parse(localStorage.getItem('sb_student_notes')||'[]')
+  saved.forEach(n => renderNoteItem(n))
+}
+
+const renderNoteItem = (note) => {
+  const c = noteColors[note.ci % noteColors.length]
+  const el = document.createElement('div')
+  el.dataset.ci = note.ci
+  el.style.cssText = `display:flex;align-items:flex-start;gap:8px;padding:9px 10px;border-radius:var(--radius-sm);background:${c.bg};animation:fadeNoteIn 0.2s ease`
+  el.innerHTML = `
+    <div style="width:3px;border-radius:2px;background:${c.bar};flex-shrink:0;align-self:stretch;min-height:18px"></div>
+    <div style="flex:1"><div style="font-size:12px;color:var(--text);line-height:1.45">${note.text}</div><div style="font-size:10px;color:var(--text-3);margin-top:3px">${note.time}</div></div>
+    <button onclick="this.closest('[data-ci]').remove();saveNotes()" style="background:none;border:none;font-size:12px;color:var(--text-3);cursor:pointer;padding:1px 3px;border-radius:4px" onmouseover="this.style.color='var(--red)'" onmouseleave="this.style.color='var(--text-3)'">✕</button>`
+  document.getElementById('notes-list').prepend(el)
+}
+
+const addNote = () => {
+  const input = document.getElementById('note-input')
+  const text = input.value.trim(); if(!text) return
+  const time = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})
+  const ci = noteColorIdx++ % noteColors.length
+  renderNoteItem({text,time,ci})
+  input.value = ''
+  saveNotes()
+}
+
+const saveNotes = () => {
+  const items = [...document.querySelectorAll('#notes-list > div[data-ci]')]
+  const notes = items.map(el => ({
+    text: el.querySelector('div div').textContent,
+    time: el.querySelectorAll('div div')[1].textContent,
+    ci: parseInt(el.dataset.ci)
+  }))
+  localStorage.setItem('sb_student_notes', JSON.stringify(notes))
+}
+
+// ── Logout ──
+const handleLogout = async () => {
+  try { await fetch(API+'/auth/logout',{headers:{Authorization:'Bearer '+getToken()},credentials:'include'}) } catch(e){}
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  window.location.href = 'login.html'
+}
+
+// ── Auth check ──
+if(!getToken()) { window.location.href='login.html' }
+const _user = getUser()
+if(_user.role && _user.role !== 'student') {
+  const routes = {admin:'admin-dashboard.html',instructor:'instructor-dashboard.html',employer:'employer-dashboard.html'}
+  if(routes[_user.role]) window.location.href = routes[_user.role]
+}
+
+// ── Init ──
+loadDashboard().finally(() => {
+  setTimeout(()=>{
+    const loader = document.getElementById('loader')
+    loader.style.opacity='0'
+    setTimeout(()=>loader.remove(),400)
+  }, 800)
+})
+
+// Init calendar and notes immediately
+renderCalendar()
+loadNotes()
+</script>
+</body>
+</html>

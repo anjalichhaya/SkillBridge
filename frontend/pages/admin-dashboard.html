@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Dashboard — SkillBridge India</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Syne:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ── Reset & Base ─────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --saffron:#FF6B00;
+  --saffron-2:#FF8C33;
+  --saffron-bg:#FFF3EA;
+  --navy:#0D1B3E;
+  --navy-2:#1A2F5E;
+  --navy-bg:#EEF2FA;
+  --green:#138808;
+  --green-bg:#EAF6EA;
+  --gold:#E8930A;
+  --gold-bg:#FEF6E4;
+  --red:#DC2626;
+  --red-bg:#FEF2F2;
+  --sidebar-w:230px;
+  --topbar-h:64px;
+  --bg:#F0F3FA;
+  --card:#fff;
+  --border:#E4E9F2;
+  --text:#0D1B3E;
+  --text-2:#5A6A85;
+  --text-3:#9AAABB;
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 1px 3px rgba(13,27,62,0.06),0 4px 16px rgba(13,27,62,0.04);
+}
+
+html,body{height:100%;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+
+/* ── Layout ───────────────────────────────────────────────── */
+.layout{display:flex;min-height:100vh}
+
+/* ── Sidebar ──────────────────────────────────────────────── */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--navy);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;height:100vh;
+  z-index:100;overflow:hidden;
+}
+.sb-brand{padding:22px 20px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sb-brand-icon{
+  width:36px;height:36px;border-radius:9px;
+  background:linear-gradient(135deg,var(--saffron),#FF4500);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0
+}
+.sb-brand-icon svg{width:18px;height:18px}
+.sb-brand-text{font-family:'Syne',sans-serif;font-size:15px;color:#fff;font-weight:700;letter-spacing:-0.3px}
+.sb-brand-text span{color:var(--saffron)}
+.sb-nav{flex:1;padding:16px 12px;overflow-y:auto;scrollbar-width:none}
+.sb-nav::-webkit-scrollbar{display:none}
+.nav-group{margin-bottom:20px}
+.nav-group-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.25);letter-spacing:0.1em;text-transform:uppercase;padding:0 8px;margin-bottom:6px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;border-radius:var(--radius-sm);
+  font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);
+  cursor:pointer;transition:all 0.15s;margin-bottom:2px;
+  text-decoration:none;position:relative;
+}
+.nav-item:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.06)}
+.nav-item.active{color:#fff;background:rgba(255,107,0,0.18)}
+.nav-item.active::before{
+  content:'';position:absolute;left:-12px;top:50%;transform:translateY(-50%);
+  width:3px;height:60%;background:var(--saffron);border-radius:0 2px 2px 0
+}
+.nav-item-icon{width:16px;height:16px;flex-shrink:0;opacity:0.7}
+.nav-item.active .nav-item-icon{opacity:1}
+.nav-badge{margin-left:auto;background:var(--saffron);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px}
+.sb-footer{padding:16px 12px;border-top:1px solid rgba(255,255,255,0.06)}
+.sb-user{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer}
+.sb-user:hover{background:rgba(255,255,255,0.05)}
+.sb-avatar{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;color:#fff;flex-shrink:0;
+  background:linear-gradient(135deg,var(--saffron),#FF4500)
+}
+.sb-user-name{font-size:12px;font-weight:600;color:#fff}
+.sb-user-role{font-size:10px;color:rgba(255,255,255,0.35)}
+
+/* ── Main Content ─────────────────────────────────────────── */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* ── Topbar ───────────────────────────────────────────────── */
+.topbar{
+  height:var(--topbar-h);background:var(--card);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;position:sticky;top:0;z-index:50;
+}
+.topbar-greeting{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--navy)}
+.topbar-sub{font-size:12px;color:var(--text-2);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.icon-btn{
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  background:var(--bg);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;transition:all 0.15s
+}
+.icon-btn:hover{border-color:var(--saffron);background:var(--saffron-bg)}
+.notif-dot{
+  width:7px;height:7px;background:var(--saffron);border-radius:50%;
+  position:absolute;top:7px;right:7px;border:1.5px solid var(--card)
+}
+.date-pill{
+  padding:6px 14px;background:var(--bg);border:1px solid var(--border);
+  border-radius:20px;font-size:12px;font-weight:500;color:var(--text-2)
+}
+.logout-btn{
+  padding:7px 16px;background:var(--saffron);color:#fff;
+  border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;
+  cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.15s
+}
+.logout-btn:hover{background:#e55a00}
+
+/* ── Page Content ─────────────────────────────────────────── */
+.content{padding:24px 28px;flex:1}
+
+/* ── Stats Grid ───────────────────────────────────────────── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{
+  background:var(--card);border-radius:var(--radius);
+  padding:18px 20px;border:1px solid var(--border);
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+  transition:transform 0.2s,box-shadow 0.2s
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(13,27,62,0.1)}
+.stat-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.stat-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center
+}
+.stat-icon svg{width:18px;height:18px}
+.stat-trend{font-size:11px;font-weight:600;display:flex;align-items:center;gap:3px;padding:3px 8px;border-radius:20px}
+.trend-up{background:var(--green-bg);color:var(--green)}
+.trend-neutral{background:var(--navy-bg);color:var(--navy-2)}
+.stat-label{font-size:11px;color:var(--text-2);font-weight:500;margin-bottom:4px}
+.stat-value{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:var(--text);line-height:1}
+.stat-sub{font-size:11px;color:var(--text-3);margin-top:5px}
+.stat-bar{height:3px;border-radius:2px;margin-top:14px;background:var(--border)}
+.stat-bar-fill{height:100%;border-radius:2px;transition:width 1s ease}
+
+/* ── Grid layouts ─────────────────────────────────────────── */
+.row-2{display:grid;grid-template-columns:1fr 300px;gap:14px;margin-bottom:20px}
+.row-2b{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px}
+
+/* ── Cards ────────────────────────────────────────────────── */
+.card{
+  background:var(--card);border-radius:var(--radius);
+  padding:20px;border:1px solid var(--border);
+  box-shadow:var(--shadow)
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:600;color:var(--text)}
+.card-sub{font-size:11px;color:var(--text-3);margin-top:1px}
+.card-action{font-size:11px;color:var(--saffron);font-weight:500;cursor:pointer}
+.card-action:hover{text-decoration:underline}
+
+/* ── Chart ────────────────────────────────────────────────── */
+.chart-wrap{position:relative;height:160px}
+
+/* ── Calendar ─────────────────────────────────────────────── */
+.cal-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-nav-btn{
+  width:26px;height:26px;border-radius:6px;border:1px solid var(--border);
+  background:var(--bg);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:12px;color:var(--text-2);transition:all 0.15s
+}
+.cal-nav-btn:hover{border-color:var(--saffron);color:var(--saffron)}
+.cal-month{font-size:13px;font-weight:600;color:var(--text)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-day-name{font-size:9px;font-weight:600;color:var(--text-3);text-align:center;padding:4px 0;text-transform:uppercase}
+.cal-date{
+  font-size:11px;text-align:center;padding:5px 2px;border-radius:6px;
+  color:var(--text-2);cursor:pointer;transition:all 0.15s;position:relative
+}
+.cal-date:hover{background:var(--saffron-bg);color:var(--saffron)}
+.cal-date.today{background:var(--saffron);color:#fff;font-weight:600}
+.cal-date.today:hover{background:var(--saffron)}
+.cal-date.has-event::after{
+  content:'';width:4px;height:4px;border-radius:50%;
+  background:var(--navy);position:absolute;bottom:2px;
+  left:50%;transform:translateX(-50%)
+}
+.cal-date.today.has-event::after{background:#fff}
+.cal-date.other-month{color:var(--border)}
+.cal-events{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+.cal-event-item{
+  display:flex;align-items:center;gap:8px;padding:6px 0;
+  font-size:11px;color:var(--text-2);border-bottom:1px dashed var(--border)
+}
+.cal-event-item:last-child{border-bottom:none}
+.cal-event-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* ── Activity ─────────────────────────────────────────────── */
+.activity-list{display:flex;flex-direction:column;gap:0}
+.activity-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--border)
+}
+.activity-item:last-child{border-bottom:none}
+.act-avatar{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;color:#fff
+}
+.act-content{flex:1;min-width:0}
+.act-text{font-size:12px;color:var(--text);line-height:1.4}
+.act-text b{font-weight:600;color:var(--navy)}
+.act-time{font-size:10px;color:var(--text-3);margin-top:2px}
+.act-badge{
+  font-size:9px;font-weight:600;padding:2px 7px;
+  border-radius:20px;flex-shrink:0;margin-top:2px
+}
+
+/* ── Notes ────────────────────────────────────────────────── */
+.notes-add-row{display:flex;gap:8px;margin-bottom:12px}
+.notes-input{
+  flex:1;padding:9px 12px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);font-size:12px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);color:var(--text);outline:none;
+  transition:border-color 0.15s
+}
+.notes-input:focus{border-color:var(--saffron);background:#fff}
+.notes-input::placeholder{color:var(--text-3)}
+.notes-add-btn{
+  padding:9px 16px;background:var(--saffron);color:#fff;
+  border:none;border-radius:var(--radius-sm);font-size:12px;
+  font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
+  white-space:nowrap;transition:all 0.15s
+}
+.notes-add-btn:hover{background:#e55a00}
+.notes-list{display:flex;flex-direction:column;gap:7px;max-height:280px;overflow-y:auto;scrollbar-width:thin}
+.note-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 12px;border-radius:var(--radius-sm);
+  animation:noteIn 0.2s ease
+}
+@keyframes noteIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.note-accent{width:3px;border-radius:2px;flex-shrink:0;align-self:stretch;min-height:20px}
+.note-body{flex:1;min-width:0}
+.note-text{font-size:12px;color:var(--text);line-height:1.45;word-break:break-word}
+.note-meta{font-size:10px;color:var(--text-3);margin-top:3px}
+.note-del{
+  width:18px;height:18px;border-radius:4px;border:none;
+  background:transparent;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;flex-shrink:0;
+  font-size:12px;color:var(--text-3);transition:all 0.15s
+}
+.note-del:hover{background:var(--red-bg);color:var(--red)}
+
+/* ── Users Table ──────────────────────────────────────────── */
+.users-table{width:100%;border-collapse:collapse}
+.users-table th{
+  font-size:10px;font-weight:600;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:0.06em;
+  padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)
+}
+.users-table td{
+  padding:10px 12px;border-bottom:1px solid var(--border);
+  font-size:12px;color:var(--text-2)
+}
+.users-table tr:last-child td{border-bottom:none}
+.users-table tr:hover td{background:var(--bg)}
+.user-cell{display:flex;align-items:center;gap:8px}
+.user-mini-avatar{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:600;color:#fff;flex-shrink:0
+}
+.user-name{font-size:12px;font-weight:500;color:var(--text)}
+.user-email{font-size:10px;color:var(--text-3)}
+.role-badge{
+  display:inline-block;font-size:10px;font-weight:600;
+  padding:3px 9px;border-radius:20px
+}
+.role-student{background:var(--saffron-bg);color:var(--saffron)}
+.role-instructor{background:var(--navy-bg);color:var(--navy-2)}
+.role-employer{background:var(--gold-bg);color:var(--gold)}
+.role-admin{background:var(--green-bg);color:var(--green)}
+
+/* ── Top Courses ──────────────────────────────────────────── */
+.course-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 0;border-bottom:1px solid var(--border)
+}
+.course-item:last-child{border-bottom:none}
+.course-rank{
+  width:22px;height:22px;border-radius:6px;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:var(--text-3);flex-shrink:0
+}
+.course-rank.top{background:var(--saffron-bg);color:var(--saffron)}
+.course-info{flex:1;min-width:0}
+.course-name{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.course-meta{font-size:10px;color:var(--text-3);margin-top:1px}
+.course-enroll{
+  font-size:11px;font-weight:600;color:var(--navy-2);
+  background:var(--navy-bg);padding:2px 8px;border-radius:10px;flex-shrink:0
+}
+
+/* ── Donut chart container ────────────────────────────────── */
+.donut-wrap{position:relative;height:140px;width:140px;margin:0 auto}
+.donut-legend{margin-top:10px;display:flex;flex-direction:column;gap:5px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2)}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── Loading ──────────────────────────────────────────────── */
+.loading-overlay{
+  position:fixed;inset:0;background:var(--navy);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:9999;transition:opacity 0.4s
+}
+.loading-logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:#fff;margin-bottom:8px}
+.loading-logo span{color:var(--saffron)}
+.loading-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:32px}
+.loading-bar-wrap{width:200px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden}
+.loading-bar-fill{height:100%;background:var(--saffron);border-radius:2px;animation:loadFill 1.2s ease forwards}
+@keyframes loadFill{from{width:0}to{width:100%}}
+
+/* ── Animations ───────────────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp 0.4s ease forwards;opacity:0}
+.delay-1{animation-delay:0.05s}
+.delay-2{animation-delay:0.1s}
+.delay-3{animation-delay:0.15s}
+.delay-4{animation-delay:0.2s}
+.delay-5{animation-delay:0.25s}
+
+/* ── Scrollbar ────────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+
+/* ── Token counter ────────────────────────────────────────── */
+.counter{display:inline-block;transition:none}
+</style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div class="loading-overlay" id="loader">
+  <div class="loading-logo">Skill<span>Bridge</span></div>
+  <div class="loading-sub">Loading admin dashboard...</div>
+  <div class="loading-bar-wrap"><div class="loading-bar-fill"></div></div>
+</div>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="sb-brand-text">Skill<span>Bridge</span></div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="nav-group">
+        <div class="nav-group-label">Overview</div>
+        <a class="nav-item active" href="#" onclick="showSection('dashboard');return false">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </a>
+        <a class="nav-item" href="#" onclick="showSection('users');return false">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Users
+          <span class="nav-badge" id="sb-user-count">—</span>
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label">Content</div>
+        <a class="nav-item" href="#" onclick="showSection('courses');return false">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Courses
+        </a>
+        <a class="nav-item" href="#" onclick="showSection('jobs');return false">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Jobs
+        </a>
+        <a class="nav-item" href="#" onclick="showSection('certificates');return false">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+          Certificates
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label">Insights</div>
+        <a class="nav-item" href="#" onclick="showSection('analytics');return false">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Analytics
+        </a>
+        <a class="nav-item" href="#" onclick="showSection('reports');return false">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Reports
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label">Account</div>
+        <a class="nav-item" href="#" onclick="showSection('profile');return false">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          My Profile
+        </a>
+        <a class="nav-item" href="#" onclick="showSection('settings');return false">
+          <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+          Settings
+        </a>
+      </div>
+    </nav>
+
+    <div class="sb-footer">
+      <div class="sb-user" id="sb-user-info">
+        <div class="sb-avatar" id="sb-avatar">A</div>
+        <div>
+          <div class="sb-user-name" id="sb-user-name">Admin</div>
+          <div class="sb-user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div>
+        <div class="topbar-greeting" id="greeting-text">Good morning 👋</div>
+        <div class="topbar-sub">Here's what's happening on SkillBridge today</div>
+      </div>
+      <div class="topbar-right">
+        <div class="icon-btn" title="Notifications" onclick="toggleNotif()" id="notif-btn" style="position:relative">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div class="notif-dot" id="notif-dot"></div>
+        </div>
+        <!-- Notification Panel -->
+        <div id="notif-panel" style="display:none;position:absolute;top:calc(var(--topbar-h) - 8px);right:160px;width:320px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 32px rgba(13,27,62,0.12);z-index:200;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:13px;font-weight:600;color:var(--text)">Notifications</div>
+            <div style="font-size:11px;color:var(--saffron);cursor:pointer;font-weight:500" onclick="clearNotifs()">Mark all read</div>
+          </div>
+          <div id="notif-list" style="max-height:320px;overflow-y:auto"></div>
+          <div style="padding:10px 16px;border-top:1px solid var(--border);text-align:center">
+            <span style="font-size:12px;color:var(--saffron);cursor:pointer;font-weight:500">View all notifications</span>
+          </div>
+        </div>
+        <div class="date-pill" id="date-pill">—</div>
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content" id="section-dashboard">
+
+      <!-- Stat Cards -->
+      <div class="stats-grid">
+        <div class="stat-card fade-up delay-1">
+          <div class="stat-card-top">
+            <div class="stat-icon" style="background:var(--saffron-bg)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--saffron)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+            <div class="stat-trend trend-up" id="stat-users-trend">— new</div>
+          </div>
+          <div class="stat-label">Total users</div>
+          <div class="stat-value"><span class="counter" id="stat-users">—</span></div>
+          <div class="stat-sub" id="stat-users-sub">Students · Instructors · Employers</div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="bar-users" style="background:var(--saffron);width:0%"></div></div>
+        </div>
+
+        <div class="stat-card fade-up delay-2">
+          <div class="stat-card-top">
+            <div class="stat-icon" style="background:var(--navy-bg)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy-2)" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <div class="stat-trend trend-neutral" id="stat-courses-trend">— total</div>
+          </div>
+          <div class="stat-label">Courses</div>
+          <div class="stat-value"><span class="counter" id="stat-courses">—</span></div>
+          <div class="stat-sub" id="stat-courses-sub">published · draft</div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="bar-courses" style="background:var(--navy-2);width:0%"></div></div>
+        </div>
+
+        <div class="stat-card fade-up delay-3">
+          <div class="stat-card-top">
+            <div class="stat-icon" style="background:var(--green-bg)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <div class="stat-trend trend-up" id="stat-enroll-trend">— this week</div>
+          </div>
+          <div class="stat-label">Enrollments</div>
+          <div class="stat-value"><span class="counter" id="stat-enrollments">—</span></div>
+          <div class="stat-sub" id="stat-enroll-sub">0% completion rate</div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="bar-enroll" style="background:var(--green);width:0%"></div></div>
+        </div>
+
+        <div class="stat-card fade-up delay-4">
+          <div class="stat-card-top">
+            <div class="stat-icon" style="background:var(--gold-bg)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <div class="stat-trend trend-up" id="stat-jobs-trend">— open</div>
+          </div>
+          <div class="stat-label">Jobs & Applications</div>
+          <div class="stat-value"><span class="counter" id="stat-jobs">—</span></div>
+          <div class="stat-sub" id="stat-jobs-sub">total applications</div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="bar-jobs" style="background:var(--gold);width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="row-2 fade-up delay-2">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Enrollment trend</div>
+              <div class="card-sub">Last 30 days</div>
+            </div>
+            <span class="card-action">View all</span>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="enrollChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Calendar -->
+        <div class="card">
+          <div class="cal-nav-row">
+            <div class="cal-nav-btn" id="cal-prev">&#8249;</div>
+            <div class="cal-month" id="cal-month-label">—</div>
+            <div class="cal-nav-btn" id="cal-next">&#8250;</div>
+          </div>
+          <div class="cal-grid">
+            <div class="cal-day-name">Su</div><div class="cal-day-name">Mo</div>
+            <div class="cal-day-name">Tu</div><div class="cal-day-name">We</div>
+            <div class="cal-day-name">Th</div><div class="cal-day-name">Fr</div>
+            <div class="cal-day-name">Sa</div>
+          </div>
+          <div class="cal-grid" id="cal-dates" style="margin-top:4px"></div>
+          <div class="cal-events" id="cal-events"></div>
+        </div>
+      </div>
+
+      <!-- Category + Top Courses + App Breakdown -->
+      <div class="row-3 fade-up delay-3">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Category split</div>
+              <div class="card-sub">Published courses</div>
+            </div>
+          </div>
+          <div class="donut-wrap">
+            <canvas id="categoryChart"></canvas>
+          </div>
+          <div class="donut-legend" id="category-legend"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Top courses</div>
+            <span class="card-action">See all</span>
+          </div>
+          <div id="top-courses-list">
+            <div style="color:var(--text-3);font-size:12px;text-align:center;padding:20px 0">Loading...</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Application status</div>
+              <div class="card-sub">All time breakdown</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:130px">
+            <canvas id="appChart"></canvas>
+          </div>
+          <div id="app-breakdown" style="margin-top:10px;display:flex;flex-direction:column;gap:5px"></div>
+        </div>
+      </div>
+
+      <!-- Recent Users + Activity + Notes -->
+      <div class="row-2b fade-up delay-4">
+        <!-- Recent Users -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Recent registrations</div>
+              <div class="card-sub" id="recent-users-sub">—</div>
+            </div>
+            <span class="card-action">Manage users</span>
+          </div>
+          <table class="users-table" id="users-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="3" style="color:var(--text-3);text-align:center;padding:20px">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Activity + Notes stacked -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <!-- Activity -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">Recent activity</div>
+              <div style="display:flex;align-items:center;gap:5px">
+                <div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite"></div>
+                <span style="font-size:10px;color:var(--green);font-weight:600">Live</span>
+              </div>
+            </div>
+            <div class="activity-list" id="activity-list">
+              <div style="color:var(--text-3);font-size:12px;text-align:center;padding:10px 0">Loading...</div>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">Quick notes</div>
+              <span style="font-size:10px;color:var(--text-3)">Saved locally</span>
+            </div>
+            <div class="notes-add-row">
+              <input class="notes-input" id="note-input" placeholder="Type a note, press Enter..." maxlength="200" />
+              <button class="notes-add-btn" onclick="addNote()">Add</button>
+            </div>
+            <div class="notes-list" id="notes-list"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end dashboard section -->
+
+    <!-- ── USERS SECTION ── -->
+    <div id="section-users" style="display:none;padding:24px 28px">
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px">All Users</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:20px">Manage platform users, roles and access</div>
+      <div class="card">
+        <div class="card-head">
+          <div style="display:flex;gap:8px">
+            <input id="user-search" placeholder="Search by name or email..." oninput="filterUsersTable()" style="padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;width:220px;color:var(--text)"/>
+            <select id="user-role-filter" onchange="filterUsersTable()" style="padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text-2);outline:none;background:#fff;cursor:pointer">
+              <option value="">All roles</option>
+              <option value="student">Student</option>
+              <option value="instructor">Instructor</option>
+              <option value="employer">Employer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div id="users-section-count" style="font-size:12px;color:var(--text-3)">— users</div>
+        </div>
+        <table class="users-table">
+          <thead><tr><th>User</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody id="users-section-tbody"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-3)">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── COURSES SECTION ── -->
+    <div id="section-courses" style="display:none;padding:24px 28px">
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px">All Courses</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:20px">Monitor all courses across instructors</div>
+      <div class="card">
+        <table class="users-table">
+          <thead><tr><th>Course</th><th>Instructor</th><th>Category</th><th>Enrollments</th><th>Status</th><th>Rating</th></tr></thead>
+          <tbody id="courses-section-tbody"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-3)">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── JOBS SECTION ── -->
+    <div id="section-jobs" style="display:none;padding:24px 28px">
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px">All Jobs</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:20px">All job postings on the platform</div>
+      <div class="card">
+        <table class="users-table">
+          <thead><tr><th>Job</th><th>Company</th><th>Type</th><th>Applications</th><th>Status</th><th>Deadline</th></tr></thead>
+          <tbody id="jobs-section-tbody"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-3)">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── CERTIFICATES SECTION ── -->
+    <div id="section-certificates" style="display:none;padding:24px 28px">
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:20px">Certificates</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px" id="certs-section-grid">
+        <div class="card" style="text-align:center;padding:32px;color:var(--text-3);grid-column:1/-1">Loading certificates...</div>
+      </div>
+    </div>
+
+    <!-- ── ANALYTICS SECTION ── -->
+    <div id="section-analytics" style="display:none;padding:24px 28px">
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:20px">Analytics</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card"><div class="card-head"><div class="card-title">User growth</div></div><div style="position:relative;height:200px"><canvas id="analyticsUserChart"></canvas></div></div>
+        <div class="card"><div class="card-head"><div class="card-title">Platform overview</div></div><div id="analytics-overview" style="display:flex;flex-direction:column;gap:12px;margin-top:8px"></div></div>
+      </div>
+    </div>
+
+    <!-- ── REPORTS SECTION ── -->
+    <div id="section-reports" style="display:none;padding:24px 28px">
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:20px">Reports</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px" id="reports-grid"></div>
+    </div>
+
+    <!-- ── PROFILE SECTION ── -->
+    <div id="section-profile" style="display:none;padding:24px 28px">
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:20px">My Profile</div>
+      <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start">
+        <!-- Profile Card -->
+        <div class="card" style="text-align:center">
+          <div style="background:linear-gradient(135deg,var(--navy),var(--navy-2));height:80px;border-radius:10px 10px 0 0;margin:-20px -20px 0;position:relative">
+            <div style="position:absolute;inset:0;opacity:0.1;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:12px 12px;border-radius:10px 10px 0 0"></div>
+          </div>
+          <div id="profile-avatar-large" style="width:64px;height:64px;border-radius:50%;margin:-32px auto 12px;border:4px solid #fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;background:var(--saffron);overflow:hidden;position:relative;cursor:pointer" title="Click to change avatar" onclick="document.getElementById('avatar-upload-input').click()"></div>
+          <!-- Hidden file input -->
+          <input type="file" id="avatar-upload-input" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadAvatar(this)"/>
+          <!-- Upload hint -->
+          <div style="font-size:10px;color:var(--text-3);margin-top:-6px;margin-bottom:10px">📷 Click avatar to change</div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text)" id="profile-full-name">Admin</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:3px" id="profile-full-email">admin@skillbridge.in</div>
+          <div style="display:inline-block;margin-top:8px;background:var(--green-bg);color:var(--green);font-size:11px;font-weight:600;padding:3px 12px;border-radius:20px">Super Admin</div>
+          <div style="font-size:12px;color:var(--text-2);margin-top:12px;line-height:1.5;padding:0 8px" id="profile-bio-display">No bio added yet.</div>
+          <button onclick="toggleEditProfile()" style="margin-top:14px;width:100%;padding:9px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text-2);font-size:12px;font-weight:500;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.15s" onmouseover="this.style.borderColor='var(--saffron)';this.style.color='var(--saffron)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-2)'">
+            ✏️ Edit profile
+          </button>
+        </div>
+
+        <!-- Profile Details + Edit Form -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <!-- View mode -->
+          <div class="card" id="profile-view-mode">
+            <div class="card-head"><div class="card-title">Account details</div></div>
+            <div style="display:flex;flex-direction:column;gap:0" id="profile-details-list"></div>
+          </div>
+
+          <!-- Edit mode -->
+          <div class="card" id="profile-edit-mode" style="display:none">
+            <div class="card-head">
+              <div class="card-title">Edit profile</div>
+              <button onclick="toggleEditProfile()" style="font-size:12px;color:var(--text-3);background:none;border:none;cursor:pointer">Cancel</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <label style="font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.05em">Full name</label>
+                <input id="edit-name" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <label style="font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.05em">Phone</label>
+                <input id="edit-phone" placeholder="10-digit mobile number" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px;grid-column:1/-1">
+                <label style="font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.05em">Bio</label>
+                <textarea id="edit-bio" rows="3" placeholder="Tell us about yourself..." style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none;resize:vertical" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+              <button onclick="toggleEditProfile()" style="padding:9px 18px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;font-size:12px;font-weight:500;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text-2)">Cancel</button>
+              <button onclick="saveProfile()" style="padding:9px 18px;background:var(--saffron);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Save changes</button>
+            </div>
+          </div>
+
+          <!-- Change Password -->
+          <div class="card">
+            <div class="card-head"><div class="card-title">Change password</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <label style="font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.05em">Current password</label>
+                <input type="password" id="pw-current" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <label style="font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.05em">New password</label>
+                <input type="password" id="pw-new" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <label style="font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.05em">Confirm new</label>
+                <input type="password" id="pw-confirm" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none" onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+              </div>
+            </div>
+            <div style="margin-top:12px;display:flex;align-items:center;gap:10px">
+              <button onclick="changePassword()" style="padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Update password</button>
+              <div id="pw-msg" style="font-size:12px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS SECTION ── -->
+    <div id="section-settings" style="display:none;padding:24px 28px">
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:20px">Settings</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Platform settings</div></div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
+              <div><div style="font-size:13px;font-weight:500;color:var(--text)">Maintenance mode</div><div style="font-size:11px;color:var(--text-3);margin-top:2px">Temporarily disable public access</div></div>
+              <div style="width:40px;height:22px;border-radius:11px;background:var(--border);cursor:pointer;position:relative;transition:background 0.2s" onclick="this.style.background=this.style.background==='var(--saffron)'?'var(--border)':'var(--saffron)'"><div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></div></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
+              <div><div style="font-size:13px;font-weight:500;color:var(--text)">New registrations</div><div style="font-size:11px;color:var(--text-3);margin-top:2px">Allow new user sign ups</div></div>
+              <div style="width:40px;height:22px;border-radius:11px;background:var(--saffron);cursor:pointer;position:relative" onclick="this.style.background=this.style.background==='var(--saffron)'?'var(--border)':'var(--saffron)'"><div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></div></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0">
+              <div><div style="font-size:13px;font-weight:500;color:var(--text)">Email notifications</div><div style="font-size:11px;color:var(--text-3);margin-top:2px">Send system email alerts</div></div>
+              <div style="width:40px;height:22px;border-radius:11px;background:var(--saffron);cursor:pointer;position:relative" onclick="this.style.background=this.style.background==='var(--saffron)'?'var(--border)':'var(--saffron)'"><div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Danger zone</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="padding:14px;border:1px solid rgba(220,38,38,0.2);border-radius:var(--radius-sm);background:var(--red-bg)">
+              <div style="font-size:13px;font-weight:500;color:var(--red);margin-bottom:4px">Clear all course data</div>
+              <div style="font-size:11px;color:var(--text-3);margin-bottom:10px">This will delete all courses and enrollments permanently.</div>
+              <button style="padding:7px 14px;background:var(--red);color:#fff;border:none;border-radius:var(--radius-sm);font-size:11px;font-weight:600;cursor:pointer" onclick="alert('This action is disabled in demo mode')">Clear data</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<style>
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+</style>
+
+<script>
+// ── Config ─────────────────────────────────────────────────
+const API = 'http://localhost:5000/api'
+
+// ── Helpers ────────────────────────────────────────────────
+const getToken = () => localStorage.getItem('token')
+
+const apiFetch = async (url, opts={}) => {
+  const res = await fetch(API + url, {
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + getToken() },
+    credentials: 'include',
+    ...opts
+  })
+  if (!res.ok) throw new Error('API error ' + res.status)
+  return res.json()
+}
+
+const getInitials = (name = '') =>
+  name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+
+const avatarColors = [
+  '#FF6B00','#0D1B3E','#138808','#F5A623',
+  '#7B2FBE','#0891B2','#DC2626','#059669'
+]
+const getAvatarColor = (name = '') => {
+  const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0)
+  return avatarColors[hash % avatarColors.length]
+}
+
+const formatTime = (dateStr) => {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const m = Math.floor(diff / 60000)
+  if (m < 1) return 'just now'
+  if (m < 60) return m + 'm ago'
+  const h = Math.floor(m / 60)
+  if (h < 24) return h + 'h ago'
+  return Math.floor(h / 24) + 'd ago'
+}
+
+const formatDate = (dateStr) => {
+  return new Date(dateStr).toLocaleDateString('en-IN', {
+    day: 'numeric', month: 'short', year: 'numeric'
+  })
+}
+
+// ── Counter animation ──────────────────────────────────────
+const animateCounter = (el, target, duration = 800) => {
+  const start = performance.now()
+  const step = (now) => {
+    const progress = Math.min((now - start) / duration, 1)
+    const ease = 1 - Math.pow(1 - progress, 3)
+    el.textContent = Math.round(ease * target).toLocaleString('en-IN')
+    if (progress < 1) requestAnimationFrame(step)
+  }
+  requestAnimationFrame(step)
+}
+
+// ── Greeting ───────────────────────────────────────────────
+const setGreeting = () => {
+  const h = new Date().getHours()
+  const g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
+  document.getElementById('greeting-text').textContent = g + ' 👋'
+
+  const now = new Date()
+  document.getElementById('date-pill').textContent = now.toLocaleDateString('en-IN', {
+    weekday: 'short', day: 'numeric', month: 'long', year: 'numeric'
+  })
+}
+
+// ── Stats ──────────────────────────────────────────────────
+const renderStats = (stats) => {
+  const { users, courses, enrollments, jobs, applications } = stats
+
+  animateCounter(document.getElementById('stat-users'), users.total)
+  document.getElementById('stat-users-trend').textContent = '+' + users.newThisWeek + ' this week'
+  document.getElementById('stat-users-sub').textContent =
+    users.students + ' students · ' + users.instructors + ' instructors · ' + users.employers + ' employers'
+  document.getElementById('sb-user-count').textContent = users.total
+
+  animateCounter(document.getElementById('stat-courses'), courses.total)
+  document.getElementById('stat-courses-trend').textContent = courses.total + ' total'
+  document.getElementById('stat-courses-sub').textContent =
+    courses.published + ' published · ' + courses.draft + ' draft'
+
+  animateCounter(document.getElementById('stat-enrollments'), enrollments.total)
+  document.getElementById('stat-enroll-trend').textContent = '+' + enrollments.newThisWeek + ' this week'
+  document.getElementById('stat-enroll-sub').textContent = enrollments.completionRate + '% completion rate'
+
+  animateCounter(document.getElementById('stat-jobs'), jobs.total)
+  document.getElementById('stat-jobs-trend').textContent = jobs.open + ' open'
+  document.getElementById('stat-jobs-sub').textContent = applications.total + ' total applications'
+
+  setTimeout(() => {
+    document.getElementById('bar-users').style.width =
+      Math.min(100, (users.total / 100) * 100) + '%'
+    document.getElementById('bar-courses').style.width =
+      Math.min(100, (courses.published / Math.max(courses.total, 1)) * 100) + '%'
+    document.getElementById('bar-enroll').style.width = enrollments.completionRate + '%'
+    document.getElementById('bar-jobs').style.width =
+      Math.min(100, (jobs.open / Math.max(jobs.total, 1)) * 100) + '%'
+  }, 300)
+}
+
+// ── Enrollment Chart ───────────────────────────────────────
+const renderEnrollChart = (trend) => {
+  const ctx = document.getElementById('enrollChart').getContext('2d')
+
+  const last30 = []
+  const now = new Date()
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now)
+    d.setDate(d.getDate() - i)
+    const key = d.toISOString().split('T')[0]
+    const found = trend.find(t => t._id === key)
+    last30.push({ date: key, count: found ? found.count : 0 })
+  }
+
+  const labels = last30.map((d, i) => {
+    if (i % 5 === 0) return new Date(d.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+    return ''
+  })
+  const data = last30.map(d => d.count)
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        borderColor: '#FF6B00',
+        backgroundColor: 'rgba(255,107,0,0.08)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        pointHoverBackgroundColor: '#FF6B00'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: '#0D1B3E',
+        titleColor: 'rgba(255,255,255,0.6)',
+        bodyColor: '#fff',
+        padding: 8,
+        callbacks: {
+          label: ctx => ' ' + ctx.raw + ' enrollments'
+        }
+      }},
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#9AAABB' } },
+        y: { grid: { color: '#F0F3FA' }, ticks: { font: { size: 10 }, color: '#9AAABB', stepSize: 1 }, beginAtZero: true }
+      }
+    }
+  })
+}
+
+// ── Category Donut ─────────────────────────────────────────
+const catColors = ['#FF6B00','#0D1B3E','#138808','#F5A623','#7B2FBE','#0891B2']
+
+const renderCategoryChart = (cats) => {
+  const ctx = document.getElementById('categoryChart').getContext('2d')
+  const labels = cats.map(c => c._id)
+  const data = cats.map(c => c.count)
+
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data, backgroundColor: catColors.slice(0, data.length), borderWidth: 0 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '68%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0D1B3E',
+          callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.raw }
+        }
+      }
+    }
+  })
+
+  const legend = document.getElementById('category-legend')
+  cats.forEach((c, i) => {
+    legend.innerHTML += `
+      <div class="legend-item">
+        <div class="legend-dot" style="background:${catColors[i % catColors.length]}"></div>
+        <span>${c._id}</span>
+        <span style="margin-left:auto;font-weight:600;color:var(--text)">${c.count}</span>
+      </div>`
+  })
+
+  if (!cats.length) {
+    legend.innerHTML = '<div style="font-size:11px;color:var(--text-3);text-align:center;padding:8px 0">No data yet</div>'
+  }
+}
+
+// ── App Status Chart ───────────────────────────────────────
+const appStatusColors = {
+  pending: '#F5A623', reviewed: '#0891B2',
+  shortlisted: '#138808', rejected: '#DC2626', hired: '#FF6B00'
+}
+
+const renderAppChart = (breakdown) => {
+  const ctx = document.getElementById('appChart').getContext('2d')
+  const labels = breakdown.map(b => b._id)
+  const data = breakdown.map(b => b.count)
+  const colors = labels.map(l => appStatusColors[l] || '#999')
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels.map(l => l.charAt(0).toUpperCase() + l.slice(1)),
+      datasets: [{ data, backgroundColor: colors, borderRadius: 5, borderSkipped: false }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: '#0D1B3E',
+        callbacks: { label: ctx => ' ' + ctx.raw + ' applications' }
+      }},
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#9AAABB' } },
+        y: { grid: { color: '#F0F3FA' }, ticks: { font: { size: 10 }, color: '#9AAABB', stepSize: 1 }, beginAtZero: true }
+      }
+    }
+  })
+
+  const el = document.getElementById('app-breakdown')
+  breakdown.forEach(b => {
+    const color = appStatusColors[b._id] || '#999'
+    el.innerHTML += `
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px">
+        <div style="width:6px;height:6px;border-radius:50%;background:${color};flex-shrink:0"></div>
+        <span style="color:var(--text-2);text-transform:capitalize">${b._id}</span>
+        <span style="margin-left:auto;font-weight:600;color:var(--text)">${b.count}</span>
+      </div>`
+  })
+
+  if (!breakdown.length) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text-3);text-align:center">No applications yet</div>'
+  }
+}
+
+// ── Top Courses ────────────────────────────────────────────
+const renderTopCourses = (courses) => {
+  const el = document.getElementById('top-courses-list')
+  if (!courses.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:16px 0">No courses yet</div>'
+    return
+  }
+  el.innerHTML = courses.map((c, i) => `
+    <div class="course-item">
+      <div class="course-rank ${i === 0 ? 'top' : ''}">${i + 1}</div>
+      <div class="course-info">
+        <div class="course-name">${c.title}</div>
+        <div class="course-meta">${c.category} · by ${c.instructor?.name || 'Unknown'}</div>
+      </div>
+      <div class="course-enroll">${c.totalEnrollments}</div>
+    </div>`).join('')
+}
+
+// ── Recent Users ───────────────────────────────────────────
+const renderUsers = (users) => {
+  document.getElementById('recent-users-sub').textContent = users.length + ' most recent registrations'
+  const tbody = document.getElementById('users-tbody')
+  if (!users.length) {
+    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-3);text-align:center;padding:20px">No users found</td></tr>'
+    return
+  }
+  tbody.innerHTML = users.map(u => {
+    const initials = getInitials(u.name)
+    const color = getAvatarColor(u.name)
+    const avatarHtml = u.avatar?.url
+      ? `<img src="${u.avatar.url}" style="width:28px;height:28px;border-radius:50%;object-fit:cover" />`
+      : `<div class="user-mini-avatar" style="background:${color}">${initials}</div>`
+
+    return `
+      <tr>
+        <td>
+          <div class="user-cell">
+            ${avatarHtml}
+            <div>
+              <div class="user-name">${u.name}</div>
+              <div class="user-email">${u.email}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="role-badge role-${u.role}">${u.role}</span></td>
+        <td>${formatDate(u.createdAt)}</td>
+      </tr>`
+  }).join('')
+}
+
+// ── Activity Feed ──────────────────────────────────────────
+const renderActivity = (activity) => {
+  const { users, enrollments, applications } = activity
+  const events = []
+
+  users.slice(0, 3).forEach(u => events.push({
+    name: u.name, time: u.createdAt,
+    text: `<b>${u.name}</b> registered as <b>${u.role}</b>`,
+    type: 'user'
+  }))
+
+  enrollments.forEach(e => events.push({
+    name: e.student?.name || 'Student', time: e.createdAt,
+    text: `<b>${e.student?.name}</b> enrolled in <b>${e.course?.title}</b>`,
+    type: 'enroll'
+  }))
+
+  applications.forEach(a => events.push({
+    name: a.applicant?.name || 'Applicant', time: a.createdAt,
+    text: `<b>${a.applicant?.name}</b> applied for <b>${a.job?.title}</b> at ${a.job?.company?.name}`,
+    type: 'apply'
+  }))
+
+  events.sort((a, b) => new Date(b.time) - new Date(a.time))
+
+  const el = document.getElementById('activity-list')
+  if (!events.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:10px 0">No activity yet</div>'
+    return
+  }
+
+  el.innerHTML = events.slice(0, 5).map(e => {
+    const color = getAvatarColor(e.name)
+    const initials = getInitials(e.name)
+    const badgeMap = { user: 'New user', enroll: 'Enrolled', apply: 'Applied' }
+    const badgeColor = { user: 'background:var(--saffron-bg);color:var(--saffron)', enroll: 'background:var(--green-bg);color:var(--green)', apply: 'background:var(--navy-bg);color:var(--navy-2)' }
+    return `
+      <div class="activity-item">
+        <div class="act-avatar" style="background:${color}">${initials}</div>
+        <div class="act-content">
+          <div class="act-text">${e.text}</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+            <div class="act-time">${formatTime(e.time)}</div>
+            <span class="act-badge" style="${badgeColor[e.type]}">${badgeMap[e.type]}</span>
+          </div>
+        </div>
+      </div>`
+  }).join('')
+}
+
+// ── Calendar ───────────────────────────────────────────────
+let calDate = new Date()
+
+const calEvents = {
+  1: 'Platform launch', 7: 'PMKVY review meeting',
+  15: 'Monthly report due', 22: 'Instructor webinar',
+  27: 'Certificate batch'
+}
+
+const renderCalendar = () => {
+  const year = calDate.getFullYear()
+  const month = calDate.getMonth()
+  const today = new Date()
+  const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month
+
+  document.getElementById('cal-month-label').textContent =
+    calDate.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
+
+  const firstDay = new Date(year, month, 1).getDay()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const el = document.getElementById('cal-dates')
+  el.innerHTML = ''
+
+  for (let i = 0; i < firstDay; i++) {
+    el.innerHTML += '<div class="cal-date other-month"></div>'
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = isCurrentMonth && d === today.getDate()
+    const hasEvent = !!calEvents[d]
+    el.innerHTML += `<div class="cal-date ${isToday ? 'today' : ''} ${hasEvent ? 'has-event' : ''}" title="${calEvents[d] || ''}">${d}</div>`
+  }
+
+  const eventsEl = document.getElementById('cal-events')
+  const eventEntries = Object.entries(calEvents)
+  eventsEl.innerHTML = eventEntries.slice(0, 3).map(([day, label]) => `
+    <div class="cal-event-item">
+      <div class="cal-event-dot" style="background:var(--saffron)"></div>
+      <span style="font-weight:500;color:var(--text);min-width:30px">${day}</span>
+      <span>${label}</span>
+    </div>`).join('')
+}
+
+document.getElementById('cal-prev').onclick = () => {
+  calDate.setMonth(calDate.getMonth() - 1)
+  renderCalendar()
+}
+document.getElementById('cal-next').onclick = () => {
+  calDate.setMonth(calDate.getMonth() + 1)
+  renderCalendar()
+}
+
+// ── Notes ──────────────────────────────────────────────────
+const noteAccents = [
+  { bg: '#FFF3EA', bar: '#FF6B00' },
+  { bg: '#EEF2FA', bar: '#1A2F5E' },
+  { bg: '#EAF6EA', bar: '#138808' },
+  { bg: '#FEF6E4', bar: '#E8930A' },
+  { bg: '#F3EEFF', bar: '#7B2FBE' }
+]
+let noteColorIdx = 0
+
+const loadNotes = () => {
+  const saved = JSON.parse(localStorage.getItem('sb_admin_notes') || '[]')
+  const el = document.getElementById('notes-list')
+  el.innerHTML = ''
+  saved.forEach((n, i) => renderNote(n, i))
+}
+
+const saveNotes = () => {
+  const items = [...document.querySelectorAll('.note-item')]
+  const notes = items.map(el => ({
+    text: el.querySelector('.note-text').textContent,
+    time: el.querySelector('.note-meta').textContent,
+    colorIdx: el.dataset.colorIdx || 0
+  }))
+  localStorage.setItem('sb_admin_notes', JSON.stringify(notes))
+}
+
+const renderNote = (note, idx) => {
+  const ci = typeof note.colorIdx !== 'undefined' ? note.colorIdx : noteColorIdx % noteAccents.length
+  const c = noteAccents[ci]
+  const el = document.createElement('div')
+  el.className = 'note-item'
+  el.dataset.colorIdx = ci
+  el.style.background = c.bg
+  el.innerHTML = `
+    <div class="note-accent" style="background:${c.bar}"></div>
+    <div class="note-body">
+      <div class="note-text">${note.text}</div>
+      <div class="note-meta">${note.time}</div>
+    </div>
+    <button class="note-del" onclick="deleteNote(this)" title="Delete">✕</button>`
+  document.getElementById('notes-list').prepend(el)
+}
+
+const addNote = () => {
+  const input = document.getElementById('note-input')
+  const text = input.value.trim()
+  if (!text) return
+  const now = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+  renderNote({ text, time: now, colorIdx: noteColorIdx % noteAccents.length })
+  noteColorIdx++
+  input.value = ''
+  saveNotes()
+}
+
+const deleteNote = (btn) => {
+  btn.closest('.note-item').remove()
+  saveNotes()
+}
+
+document.getElementById('note-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addNote()
+})
+
+// ── Auth ───────────────────────────────────────────────────
+const handleLogout = async () => {
+  try {
+    await fetch(API + '/auth/logout', {
+      headers: { Authorization: 'Bearer ' + getToken() },
+      credentials: 'include'
+    })
+  } catch (e) {}
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  window.location.href = '../pages/login.html'
+}
+
+// ── Sidebar user ───────────────────────────────────────────
+const renderSidebarUser = (user) => {
+  if (!user) return
+  document.getElementById('sb-user-name').textContent = user.name || 'Admin'
+  const avatarEl = document.getElementById('sb-avatar')
+  if (user.avatar?.url) {
+    avatarEl.innerHTML = `<img src="${user.avatar.url}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;display:block"/>`
+    avatarEl.style.background = 'none'
+    avatarEl.style.fontSize = '0'
+  } else {
+    avatarEl.textContent = getInitials(user.name || 'Admin')
+    avatarEl.style.background = getAvatarColor(user.name || 'Admin')
+    avatarEl.style.fontSize = ''
+  }
+}
+
+// ── Main init ──────────────────────────────────────────────
+const init = async () => {
+  setGreeting()
+  renderCalendar()
+  loadNotes()
+
+  const storedUser = JSON.parse(localStorage.getItem('user') || 'null')
+  renderSidebarUser(storedUser)
+
+  // Check token
+  if (!getToken()) {
+    window.location.href = '../pages/login.html'
+    return
+  }
+
+  try {
+    const data = await apiFetch('/admin/stats')
+
+    renderStats(data.stats)
+    renderEnrollChart(data.charts.enrollmentTrend)
+    renderCategoryChart(data.charts.categoryDistribution)
+    renderAppChart(data.stats.applications.breakdown)
+    renderTopCourses(data.topCourses)
+    renderUsers(data.recentActivity.users)
+    renderActivity(data.recentActivity)
+
+    // Cache for notifications
+    _cachedActivity = data.recentActivity
+
+  } catch (err) {
+    console.error('Dashboard load error:', err)
+    // Show mock data notice
+    document.getElementById('section-dashboard').insertAdjacentHTML('afterbegin',
+      `<div style="background:var(--saffron-bg);border:1px solid var(--saffron);border-radius:var(--radius-sm);padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--saffron);font-weight:500">
+        ⚠️ Could not connect to API. Make sure the backend is running on port 5000 and you are logged in.
+      </div>`)
+  }
+
+  // Hide loader
+  setTimeout(() => {
+    const loader = document.getElementById('loader')
+    loader.style.opacity = '0'
+    setTimeout(() => loader.remove(), 400)
+  }, 1000)
+}
+
+// ── Section switching ──────────────────────────────────────
+const allSections = ['dashboard','users','courses','jobs','certificates','analytics','reports','profile','settings']
+
+const showSection = (id) => {
+  // hide all
+  allSections.forEach(s => {
+    const el = document.getElementById('section-' + s)
+    if(el) el.style.display = 'none'
+  })
+  // show target
+  const target = document.getElementById('section-' + id)
+  if(target) target.style.display = id === 'dashboard' ? 'block' : 'block'
+
+  // update nav active state
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'))
+  const navMap = {
+    dashboard: 0, users: 1, courses: 2, jobs: 3, certificates: 4,
+    analytics: 5, reports: 6, profile: 7, settings: 8
+  }
+  const items = document.querySelectorAll('.nav-item')
+  if(items[navMap[id]]) items[navMap[id]].classList.add('active')
+
+  // lazy-load section data
+  if(id === 'users' && !window._usersLoaded) loadUsersSection()
+  if(id === 'courses' && !window._coursesLoaded) loadCoursesSection()
+  if(id === 'jobs' && !window._jobsLoaded) loadJobsSection()
+  if(id === 'certificates' && !window._certsLoaded) loadCertsSection()
+  if(id === 'analytics' && !window._analyticsLoaded) loadAnalyticsSection()
+  if(id === 'reports') renderReports()
+  if(id === 'profile') renderProfileSection()
+}
+
+// ── Notifications ──────────────────────────────────────────
+let notifOpen = false
+let _cachedActivity = null
+
+const toggleNotif = () => {
+  const panel = document.getElementById('notif-panel')
+  notifOpen = !notifOpen
+  panel.style.display = notifOpen ? 'block' : 'none'
+  if(notifOpen) renderNotifPanel()
+}
+
+// Close when clicking outside
+document.addEventListener('click', (e) => {
+  if(notifOpen && !e.target.closest('#notif-btn') && !e.target.closest('#notif-panel')) {
+    document.getElementById('notif-panel').style.display = 'none'
+    notifOpen = false
+  }
+})
+
+const renderNotifPanel = () => {
+  const el = document.getElementById('notif-list')
+  if(!_cachedActivity) {
+    el.innerHTML = '<div style="padding:16px;text-align:center;font-size:12px;color:var(--text-3)">Loading...</div>'
+    return
+  }
+  const { users, enrollments, applications } = _cachedActivity
+  const items = [
+    ...users.slice(0,3).map(u => ({
+      icon: '👤', text: `<b>${u.name}</b> registered as ${u.role}`,
+      time: u.createdAt, color: 'var(--saffron)'
+    })),
+    ...enrollments.slice(0,2).map(e => ({
+      icon: '📚', text: `<b>${e.student?.name}</b> enrolled in ${e.course?.title}`,
+      time: e.createdAt, color: 'var(--green)'
+    })),
+    ...applications.slice(0,2).map(a => ({
+      icon: '💼', text: `<b>${a.applicant?.name}</b> applied for ${a.job?.title}`,
+      time: a.createdAt, color: 'var(--navy-2)'
+    }))
+  ].sort((a,b) => new Date(b.time) - new Date(a.time)).slice(0,8)
+
+  if(!items.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3)">No notifications yet</div>'
+    return
+  }
+  el.innerHTML = items.map(item => `
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s" onmouseover="this.style.background='var(--bg)'" onmouseleave="this.style.background='transparent'">
+      <div style="width:28px;height:28px;border-radius:50%;background:${item.color}20;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">${item.icon}</div>
+      <div style="flex:1">
+        <div style="font-size:12px;color:var(--text);line-height:1.4">${item.text}</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">${formatTime(item.time)}</div>
+      </div>
+    </div>`).join('')
+}
+
+const clearNotifs = () => {
+  document.getElementById('notif-dot').style.display = 'none'
+  document.getElementById('notif-list').innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3)">All caught up! ✓</div>'
+}
+
+// ── Profile section ────────────────────────────────────────
+const renderProfileSection = () => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
+
+  // Avatar
+  const avatarEl = document.getElementById('profile-avatar-large')
+  if(user.avatar?.url) {
+    avatarEl.innerHTML = `<img src="${user.avatar.url}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;display:block"/>`
+    avatarEl.style.background = 'none'
+    avatarEl.style.padding = '0'
+    avatarEl.style.fontSize = '0'
+  } else {
+    avatarEl.innerHTML = getInitials(user.name || 'Admin')
+    avatarEl.style.background = getAvatarColor(user.name || 'Admin')
+    avatarEl.style.fontSize = '22px'
+  }
+
+  document.getElementById('profile-full-name').textContent = user.name || 'Admin'
+  document.getElementById('profile-full-email').textContent = user.email || '—'
+  document.getElementById('profile-bio-display').textContent = user.bio || 'No bio added yet.'
+
+  // Pre-fill edit fields
+  document.getElementById('edit-name').value = user.name || ''
+  document.getElementById('edit-phone').value = user.phone || ''
+  document.getElementById('edit-bio').value = user.bio || ''
+
+  // Details list
+  const detailsList = document.getElementById('profile-details-list')
+  const fields = [
+    ['Full name', user.name || '—'],
+    ['Email address', user.email || '—'],
+    ['Phone number', user.phone || 'Not added'],
+    ['Bio', user.bio || 'No bio added yet'],
+    ['Role', user.role || 'admin'],
+    ['Account status', user.isActive !== false ? '✅ Active' : '❌ Inactive'],
+    ['Email verified', user.isEmailVerified ? '✅ Verified' : '⚠️ Not verified'],
+    ['Member since', user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'}) : '—'],
+    ['Last login', user.lastLogin ? formatTime(user.lastLogin) : '—'],
+  ]
+  detailsList.innerHTML = fields.map(([label, value]) => `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em;width:140px;flex-shrink:0">${label}</div>
+      <div style="font-size:13px;color:var(--text);text-align:right;flex:1">${value}</div>
+    </div>`).join('')
+}
+
+const toggleEditProfile = () => {
+  const view = document.getElementById('profile-view-mode')
+  const edit = document.getElementById('profile-edit-mode')
+  const isEditing = edit.style.display !== 'none'
+  view.style.display = isEditing ? 'block' : 'none'
+  edit.style.display = isEditing ? 'none' : 'block'
+}
+
+const saveProfile = async () => {
+  const name = document.getElementById('edit-name').value.trim()
+  const phone = document.getElementById('edit-phone').value.trim()
+  const bio = document.getElementById('edit-bio').value.trim()
+  if(!name) { alert('Name is required'); return }
+
+  try {
+    const res = await fetch(API + '/users/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + getToken() },
+      credentials: 'include',
+      body: JSON.stringify({ name, phone, bio })
+    })
+    const data = await res.json()
+    if(data.success) {
+      // Update localStorage
+      const user = JSON.parse(localStorage.getItem('user') || '{}')
+      Object.assign(user, { name, phone, bio })
+      localStorage.setItem('user', JSON.stringify(user))
+      // Refresh UI
+      document.getElementById('sb-user-name').textContent = name
+      renderProfileSection()
+      toggleEditProfile()
+      alert('✅ Profile updated successfully!')
+    } else {
+      alert(data.message || 'Failed to update profile')
+    }
+  } catch(err) {
+    alert('Error connecting to server')
+  }
+}
+
+const changePassword = async () => {
+  const currentPassword = document.getElementById('pw-current').value
+  const newPassword = document.getElementById('pw-new').value
+  const confirm = document.getElementById('pw-confirm').value
+  const msgEl = document.getElementById('pw-msg')
+
+  if(!currentPassword || !newPassword) { msgEl.textContent = '⚠️ Fill all fields'; msgEl.style.color = 'var(--red)'; return }
+  if(newPassword !== confirm) { msgEl.textContent = '⚠️ Passwords do not match'; msgEl.style.color = 'var(--red)'; return }
+  if(newPassword.length < 6) { msgEl.textContent = '⚠️ Min 6 characters'; msgEl.style.color = 'var(--red)'; return }
+
+  try {
+    const res = await fetch(API + '/auth/password/update', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + getToken() },
+      credentials: 'include',
+      body: JSON.stringify({ currentPassword, newPassword })
+    })
+    const data = await res.json()
+    if(data.success) {
+      msgEl.textContent = '✅ Password updated!'
+      msgEl.style.color = 'var(--green)'
+      document.getElementById('pw-current').value = ''
+      document.getElementById('pw-new').value = ''
+      document.getElementById('pw-confirm').value = ''
+    } else {
+      msgEl.textContent = '⚠️ ' + (data.message || 'Failed')
+      msgEl.style.color = 'var(--red)'
+    }
+  } catch(err) {
+    msgEl.textContent = '⚠️ Server error'
+    msgEl.style.color = 'var(--red)'
+  }
+}
+
+// ── Users section ──────────────────────────────────────────
+let _allUsers = []
+
+const loadUsersSection = async () => {
+  window._usersLoaded = true
+  try {
+    const data = await apiFetch('/admin/users?limit=50')
+    _allUsers = data.users || []
+    document.getElementById('users-section-count').textContent = _allUsers.length + ' users'
+    renderUsersTable(_allUsers)
+  } catch(err) {
+    document.getElementById('users-section-tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--red)">Failed to load users</td></tr>'
+  }
+}
+
+const filterUsersTable = () => {
+  const q = document.getElementById('user-search').value.toLowerCase()
+  const role = document.getElementById('user-role-filter').value
+  const filtered = _allUsers.filter(u => {
+    const matchQ = !q || u.name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q)
+    const matchRole = !role || u.role === role
+    return matchQ && matchRole
+  })
+  renderUsersTable(filtered)
+  document.getElementById('users-section-count').textContent = filtered.length + ' users'
+}
+
+const renderUsersTable = (users) => {
+  const tbody = document.getElementById('users-section-tbody')
+  if(!users.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-3)">No users found</td></tr>'
+    return
+  }
+  tbody.innerHTML = users.map(u => {
+    const initials = getInitials(u.name || '')
+    const color = getAvatarColor(u.name || '')
+    const avatarHTML = u.avatar?.url
+      ? `<img src="${u.avatar.url}" style="width:28px;height:28px;border-radius:50%;object-fit:cover"/>`
+      : `<div class="user-mini-avatar" style="background:${color}">${initials}</div>`
+    return `
+      <tr>
+        <td>
+          <div class="user-cell">
+            ${avatarHTML}
+            <div>
+              <div class="user-name">${u.name || '—'}</div>
+              <div class="user-email">${u.email}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="role-badge role-${u.role}">${u.role}</span></td>
+        <td><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:${u.isActive?'var(--green-bg)':'var(--red-bg)'};color:${u.isActive?'var(--green)':'var(--red)'}">${u.isActive ? 'Active' : 'Inactive'}</span></td>
+        <td>${formatDate(u.createdAt)}</td>
+        <td>
+          <div style="display:flex;gap:6px">
+            <button onclick="toggleStatus('${u._id}', ${u.isActive}, this)" style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--text-2);font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.15s" onmouseover="this.style.borderColor='var(--saffron)';this.style.color='var(--saffron)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-2)'">${u.isActive ? 'Deactivate' : 'Activate'}</button>
+            <button onclick="deleteUserAdmin('${u._id}', this)" style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid rgba(220,38,38,0.2);background:var(--red-bg);color:var(--red);font-family:'Plus Jakarta Sans',sans-serif">Delete</button>
+          </div>
+        </td>
+      </tr>`
+  }).join('')
+}
+
+const changeRole = async (userId, role, select) => {
+  select.disabled = true
+  try {
+    const data = await apiFetch(`/admin/users/${userId}/role`, {
+      method: 'PUT', body: JSON.stringify({ role })
+    })
+    if(!data.success) { alert(data.message || 'Failed'); select.disabled = false }
+  } catch(err) { select.disabled = false }
+  select.disabled = false
+}
+
+const toggleStatus = async (userId, isActive, btn) => {
+  if(!confirm(`${isActive ? 'Deactivate' : 'Activate'} this user?`)) return
+  try {
+    const data = await apiFetch(`/admin/users/${userId}/toggle-status`, { method: 'PUT' })
+    if(data.success) {
+      const user = _allUsers.find(u => u._id === userId)
+      if(user) user.isActive = !user.isActive
+      renderUsersTable(_allUsers)
+    }
+  } catch(err) { alert('Error') }
+}
+
+const deleteUserAdmin = async (userId, btn) => {
+  if(!confirm('Permanently delete this user and all their data?')) return
+  btn.disabled = true
+  try {
+    const data = await apiFetch(`/admin/users/${userId}`, { method: 'DELETE' })
+    if(data.success) {
+      _allUsers = _allUsers.filter(u => u._id !== userId)
+      renderUsersTable(_allUsers)
+      document.getElementById('users-section-count').textContent = _allUsers.length + ' users'
+    }
+  } catch(err) { alert('Error') }
+}
+
+// ── Courses section ────────────────────────────────────────
+const loadCoursesSection = async () => {
+  window._coursesLoaded = true
+  try {
+    const data = await apiFetch('/courses?limit=50')
+    const courses = data.courses || []
+    const tbody = document.getElementById('courses-section-tbody')
+    if(!courses.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-3)">No courses yet</td></tr>'; return }
+    tbody.innerHTML = courses.map(c => `
+      <tr>
+        <td><div style="font-size:13px;font-weight:500;color:var(--text)">${c.title}</div></td>
+        <td style="font-size:12px">${c.instructor?.name || '—'}</td>
+        <td><span style="font-size:10px;background:var(--navy-bg);color:var(--navy-2);padding:2px 8px;border-radius:10px;font-weight:500">${c.category}</span></td>
+        <td style="font-size:12px;font-weight:600;color:var(--navy)">${c.totalEnrollments || 0}</td>
+        <td><span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:${c.status==='published'?'var(--green-bg)':c.status==='draft'?'var(--navy-bg)':'var(--red-bg)'};color:${c.status==='published'?'var(--green)':c.status==='draft'?'var(--navy-2)':'var(--red)'}">${c.status}</span></td>
+        <td style="font-size:12px;color:var(--gold)">${c.ratings ? '★ ' + c.ratings.toFixed(1) : '—'}</td>
+      </tr>`).join('')
+  } catch(err) {}
+}
+
+// ── Jobs section ───────────────────────────────────────────
+const loadJobsSection = async () => {
+  window._jobsLoaded = true
+  try {
+    const data = await apiFetch('/jobs?limit=50')
+    const jobs = data.jobs || []
+    const tbody = document.getElementById('jobs-section-tbody')
+    if(!jobs.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-3)">No jobs yet</td></tr>'; return }
+    tbody.innerHTML = jobs.map(j => `
+      <tr>
+        <td><div style="font-size:13px;font-weight:500;color:var(--text)">${j.title}</div></td>
+        <td style="font-size:12px">${j.company?.name || '—'}</td>
+        <td><span style="font-size:10px;background:var(--navy-bg);color:var(--navy-2);padding:2px 8px;border-radius:10px;font-weight:500">${j.jobType}</span></td>
+        <td style="font-size:12px;font-weight:600;color:var(--navy)">${j.totalApplications || 0}</td>
+        <td><span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:${j.status==='open'?'var(--green-bg)':'var(--red-bg)'};color:${j.status==='open'?'var(--green)':'var(--red)'}">${j.status}</span></td>
+        <td style="font-size:12px;color:var(--text-3)">${formatDate(j.applicationDeadline)}</td>
+      </tr>`).join('')
+  } catch(err) {}
+}
+
+// ── Certificates section ───────────────────────────────────
+const loadCertsSection = async () => {
+  window._certsLoaded = true
+  const grid = document.getElementById('certs-section-grid')
+  try {
+    const data = await apiFetch('/enrollments/my-enrollments')
+    const issued = (data.enrollments || []).filter(e => e.certificate?.issued)
+    if(!issued.length) {
+      grid.innerHTML = '<div class="card" style="text-align:center;padding:32px;color:var(--text-3);grid-column:1/-1">No certificates issued yet on the platform.</div>'
+      return
+    }
+    grid.innerHTML = issued.map(e => `
+      <div class="card" style="background:linear-gradient(135deg,var(--navy),var(--navy-2));position:relative;overflow:hidden">
+        <div style="position:absolute;right:-20px;bottom:-20px;opacity:0.05;font-size:100px">🏆</div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.4);margin-bottom:8px;font-family:monospace">${e.certificate.certificateId}</div>
+        <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px">${e.course?.title || 'Course'}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:10px">${e.course?.category || ''}</div>
+        <div style="font-size:10px;color:var(--gold)">Issued ${formatDate(e.certificate.issuedAt)}</div>
+      </div>`).join('')
+  } catch(err) {
+    grid.innerHTML = '<div class="card" style="text-align:center;padding:32px;color:var(--text-3);grid-column:1/-1">Could not load certificates</div>'
+  }
+}
+
+// ── Analytics section ──────────────────────────────────────
+const loadAnalyticsSection = async () => {
+  window._analyticsLoaded = true
+  try {
+    const data = await apiFetch('/admin/stats')
+    const { stats, charts } = data
+
+    // User growth chart
+    const ctx = document.getElementById('analyticsUserChart')
+    if(ctx && charts.userGrowth?.length) {
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: charts.userGrowth.map(d => {
+            const months = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+            return months[d._id.month] + ' ' + d._id.year
+          }),
+          datasets: [{
+            data: charts.userGrowth.map(d => d.count),
+            borderColor: '#FF6B00', backgroundColor: 'rgba(255,107,0,0.08)',
+            borderWidth: 2, fill: true, tension: 0.4, pointRadius: 4,
+            pointBackgroundColor: '#FF6B00'
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#9AAABB' } },
+            y: { grid: { color: '#F0F3FA' }, ticks: { font: { size: 10 }, color: '#9AAABB', stepSize: 1 }, beginAtZero: true }
+          }
+        }
+      })
+    }
+
+    // Overview stats
+    const overviewEl = document.getElementById('analytics-overview')
+    const items = [
+      { label: 'Total users', val: stats.users.total, icon: '👥', color: 'var(--saffron)' },
+      { label: 'Published courses', val: stats.courses.published, icon: '📚', color: 'var(--navy-2)' },
+      { label: 'Total enrollments', val: stats.enrollments.total, icon: '✅', color: 'var(--green)' },
+      { label: 'Completion rate', val: stats.enrollments.completionRate + '%', icon: '🎯', color: 'var(--gold)' },
+      { label: 'Open jobs', val: stats.jobs.open, icon: '💼', color: 'var(--blue)' },
+      { label: 'Applications', val: stats.applications.total, icon: '📄', color: 'var(--purple)' },
+    ]
+    overviewEl.innerHTML = items.map(item => `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="width:32px;height:32px;border-radius:8px;background:${item.color}15;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${item.icon}</div>
+        <div style="flex:1;font-size:12px;color:var(--text-2)">${item.label}</div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:${item.color}">${item.val}</div>
+      </div>`).join('')
+  } catch(err) {}
+}
+
+// ── Reports section ────────────────────────────────────────
+const renderReports = () => {
+  if(window._reportsRendered) return
+  window._reportsRendered = true
+  const grid = document.getElementById('reports-grid')
+  const reports = [
+    { title: 'User Report', desc: 'Total users by role, join dates, activity', icon: '👥', color: 'var(--saffron)' },
+    { title: 'Course Report', desc: 'Enrollments, completion rates, top courses', icon: '📚', color: 'var(--navy-2)' },
+    { title: 'Job Report', desc: 'Job postings, applications, hired counts', icon: '💼', color: 'var(--green)' },
+    { title: 'Certificate Report', desc: 'Certificates issued by course and date', icon: '🏆', color: 'var(--gold)' },
+    { title: 'Revenue Report', desc: 'Course revenue, paid vs free enrollments', icon: '₹', color: 'var(--blue)' },
+    { title: 'Scheme Report', desc: 'PMKVY / NAPS / DDUGKY participation data', icon: '🇮🇳', color: 'var(--purple)' },
+  ]
+  grid.innerHTML = reports.map(r => `
+    <div class="card" style="cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--saffron)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+      <div style="width:44px;height:44px;border-radius:12px;background:${r.color}15;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px">${r.icon}</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px">${r.title}</div>
+      <div style="font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:14px">${r.desc}</div>
+      <div style="font-size:12px;color:${r.color};font-weight:500;cursor:pointer">Download CSV →</div>
+    </div>`).join('')
+}
+
+// ── Upload avatar ──────────────────────────────────────────
+const uploadAvatar = async (input) => {
+  const file = input.files[0]
+  if(!file) return
+
+  // Validate size (2MB)
+  if(file.size > 2 * 1024 * 1024) {
+    alert('Image must be under 2MB'); input.value = ''; return
+  }
+
+  // Show preview immediately
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const avatarEl = document.getElementById('profile-avatar-large')
+    avatarEl.innerHTML = `<img src="${e.target.result}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;display:block"/>`
+    avatarEl.style.background = 'none'
+    avatarEl.style.fontSize = '0'
+
+    // Also update sidebar avatar preview
+    const sbAvatar = document.getElementById('sb-avatar')
+    sbAvatar.innerHTML = `<img src="${e.target.result}" style="width:34px;height:34px;border-radius:50%;object-fit:cover"/>`
+    sbAvatar.style.background = 'none'
+    sbAvatar.style.fontSize = '0'
+  }
+  reader.readAsDataURL(file)
+
+  // Upload to server
+  const formData = new FormData()
+  formData.append('avatar', file)
+
+  try {
+    const res = await fetch(API + '/users/avatar', {
+      method: 'PUT',
+      headers: { Authorization: 'Bearer ' + getToken() },
+      credentials: 'include',
+      body: formData
+    })
+    const data = await res.json()
+    if(data.success) {
+      // Update localStorage
+      const user = JSON.parse(localStorage.getItem('user') || '{}')
+      user.avatar = data.avatar
+      localStorage.setItem('user', JSON.stringify(user))
+    } else {
+      alert(data.message || 'Upload failed')
+    }
+  } catch(err) {
+    alert('Upload failed — check your connection')
+  }
+
+  input.value = '' // reset input
+}
+
+init()
+</script>
+</body>
+</html>
