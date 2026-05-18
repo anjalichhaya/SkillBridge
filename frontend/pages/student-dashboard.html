@@ -463,13 +463,42 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 
       <!-- ── COURSES SECTION ── -->
       <div id="section-courses" style="display:none">
-        <div class="card-head" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
           <div>
-            <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text)">My Courses</div>
-            <div style="font-size:12px;color:var(--text-3);margin-top:2px">All your enrolled courses</div>
+            <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text)">Courses</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px">Your learning journey</div>
           </div>
         </div>
-        <div class="courses-grid" id="all-courses-list"></div>
+        <!-- Tabs -->
+        <div style="display:flex;gap:4px;margin-bottom:18px;background:var(--bg);padding:4px;border-radius:10px;width:fit-content">
+          <button id="tab-enrolled" onclick="switchCourseTab('enrolled')" style="padding:8px 20px;border-radius:8px;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;background:var(--saffron);color:#fff;transition:all 0.2s">My Enrollments</button>
+          <button id="tab-catalog" onclick="switchCourseTab('catalog')" style="padding:8px 20px;border-radius:8px;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;background:transparent;color:var(--text-2);transition:all 0.2s">Browse Catalog</button>
+        </div>
+
+        <!-- Enrolled view -->
+        <div id="courses-enrolled-view">
+          <div class="courses-grid" id="all-courses-list"></div>
+        </div>
+
+        <!-- Catalog view -->
+        <div id="courses-catalog-view" style="display:none">
+          <!-- Search + filter -->
+          <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+            <input id="catalog-search" placeholder="Search courses..." oninput="filterCatalog()"
+              style="flex:1;min-width:200px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;background:#fff"
+              onfocus="this.style.borderColor='var(--saffron)'" onblur="this.style.borderColor='var(--border)'"/>
+            <select id="catalog-cat" onchange="filterCatalog()"
+              style="padding:9px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text-2);background:#fff;outline:none;cursor:pointer">
+              <option value="">All categories</option>
+              <option>Technology</option><option>Finance</option><option>Healthcare</option>
+              <option>Agriculture</option><option>Design</option><option>Marketing</option>
+              <option>Soft Skills</option><option>Language</option><option>Other</option>
+            </select>
+          </div>
+          <div class="courses-grid" id="catalog-grid">
+            <div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text-3);font-size:13px">Loading catalog...</div>
+          </div>
+        </div>
       </div>
 
       <!-- ── CERTIFICATES SECTION ── -->
@@ -701,7 +730,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 </div>
 
 <script>
-const API = 'https://skillbridge-india.onrender.com/api'
+const API = 'http://localhost:5000/api'
 const getToken = () => localStorage.getItem('token')
 const getUser = () => JSON.parse(localStorage.getItem('user') || '{}')
 
@@ -888,7 +917,7 @@ const loadDashboard = async () => {
     // Home courses list (last 3)
     const homeCoursesEl = document.getElementById('home-courses-list')
     if(!allEnrollments.length) {
-      homeCoursesEl.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">No courses yet</div><div class="empty-sub">Browse our catalog and enroll in your first course</div><button class="empty-btn" onclick="showSection('jobs')">Browse courses</button></div>`
+      homeCoursesEl.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">No courses yet</div><div class="empty-sub">Browse our catalog and enroll in your first course</div><button class="empty-btn" onclick="showSection('courses')">Browse courses</button></div>`
     } else {
       homeCoursesEl.innerHTML = `<div class="courses-grid">${allEnrollments.slice(0,3).map(courseCardHTML).join('')}</div>`
     }
@@ -987,7 +1016,26 @@ const applyForJob = async (jobId, btn) => {
     if(data.success) {
       btn.textContent = '✓ Applied'
       btn.style.background = 'var(--green)'
-      document.getElementById('s-apps').textContent = parseInt(document.getElementById('s-apps').textContent) + 1
+      // Update stat counter
+      document.getElementById('s-apps').textContent = parseInt(document.getElementById('s-apps').textContent || '0') + 1
+
+      // Reload applications so home-apps-list refreshes
+      try {
+        const appRes = await apiFetch('/applications/my-applications')
+        allApplications = appRes.applications || []
+        // Refresh home apps list
+        const homeAppsEl = document.getElementById('home-apps-list')
+        if(homeAppsEl) {
+          if(!allApplications.length) {
+            homeAppsEl.innerHTML = `<div class="empty-state"><div class="empty-icon">💼</div><div class="empty-title">No applications yet</div><div class="empty-sub">Apply for jobs matching your skills</div></div>`
+          } else {
+            homeAppsEl.innerHTML = allApplications.slice(0,3).map(appItemHTML).join('')
+          }
+        }
+        // Refresh all-apps-list if visible
+        const allAppsEl = document.getElementById('all-apps-list')
+        if(allAppsEl && allAppsEl.children.length) loadAllApplications()
+      } catch(e) {}
     } else {
       btn.textContent = data.message?.includes('already') ? '✓ Applied' : 'Try again'
       btn.style.background = data.message?.includes('already') ? 'var(--green)' : 'var(--red)'
