@@ -6,9 +6,8 @@ import {
   sendWelcomeEmail
 } from '../utils/sendEmail.js'
 
-// ─── @desc    Register a new user
+// ─── @desc    Register
 // ─── @route   POST /api/auth/register
-// ─── @access  Public
 export const register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body
@@ -20,7 +19,7 @@ export const register = async (req, res, next) => {
 
     const user = await User.create({ name, email, password, role })
 
-    // Send welcome email (non-blocking — don't fail registration if email fails)
+    // Non-blocking welcome email
     sendWelcomeEmail({ name, email, role: role || 'student' })
       .catch(err => console.error('Welcome email failed:', err.message))
 
@@ -30,9 +29,8 @@ export const register = async (req, res, next) => {
   }
 }
 
-// ─── @desc    Login user
+// ─── @desc    Login
 // ─── @route   POST /api/auth/login
-// ─── @access  Public
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body
@@ -42,43 +40,35 @@ export const login = async (req, res, next) => {
     }
 
     const user = await User.findOne({ email }).select('+password')
-
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid email or password' })
     }
-
     if (!user.isActive) {
-      return res.status(401).json({ success: false, message: 'Your account has been deactivated. Contact support.' })
+      return res.status(401).json({ success: false, message: 'Account deactivated. Contact support.' })
     }
 
-    const isPasswordMatched = await user.comparePassword(password)
-    if (!isPasswordMatched) {
+    const isMatch = await user.comparePassword(password)
+    if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid email or password' })
     }
 
     user.lastLogin = new Date()
     await user.save({ validateBeforeSave: false })
-
     sendToken(user, 200, res, 'Logged in successfully')
   } catch (err) {
     next(err)
   }
 }
 
-// ─── @desc    Logout user
+// ─── @desc    Logout
 // ─── @route   GET /api/auth/logout
-// ─── @access  Private
 export const logout = (req, res) => {
-  res.cookie('token', null, {
-    expires: new Date(Date.now()),
-    httpOnly: true
-  })
+  res.cookie('token', null, { expires: new Date(Date.now()), httpOnly: true })
   res.status(200).json({ success: true, message: 'Logged out successfully' })
 }
 
-// ─── @desc    Get currently logged in user
+// ─── @desc    Get me
 // ─── @route   GET /api/auth/me
-// ─── @access  Private
 export const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id)
@@ -90,87 +80,109 @@ export const getMe = async (req, res, next) => {
 
 // ─── @desc    Update password
 // ─── @route   PUT /api/auth/password/update
-// ─── @access  Private
 export const updatePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body
-
     const user = await User.findById(req.user.id).select('+password')
-    const isMatched = await user.comparePassword(currentPassword)
-
-    if (!isMatched) {
+    const isMatch = await user.comparePassword(currentPassword)
+    if (!isMatch) {
       return res.status(400).json({ success: false, message: 'Current password is incorrect' })
     }
-
     user.password = newPassword
     await user.save()
-
     sendToken(user, 200, res, 'Password updated successfully')
   } catch (err) {
     next(err)
   }
 }
 
-// ─── @desc    Forgot password — send reset email
+// ─── @desc    Forgot password
 // ─── @route   POST /api/auth/password/forgot
-// ─── @access  Public
+// ─── KEY FIX: never returns success:true if email actually failed
 export const forgotPassword = async (req, res, next) => {
+  let savedUser = null
+
   try {
     const user = await User.findOne({ email: req.body.email })
 
     if (!user) {
-      return res.status(404).json({ success: false, message: 'No account found with this email address' })
+      // Security: return same message so attackers can't enumerate emails
+      return res.status(200).json({
+        success: true,
+        message: 'If an account exists with this email, a reset link has been sent.'
+      })
     }
 
-    // Generate reset token
+    // Generate reset token and save hashed version to DB
     const resetToken = user.getResetPasswordToken()
     await user.save({ validateBeforeSave: false })
+    savedUser = user  // keep ref for cleanup if email fails
 
-    // Build reset URL pointing to frontend reset page
-    const frontendUrl = process.env.FRONTEND_URL || 'http://127.0.0.1:5500'
+    // Build the reset URL
+    const frontendUrl = (process.env.FRONTEND_URL || 'http://127.0.0.1:5500').replace(/\/$/, '')
     const resetUrl = `${frontendUrl}/pages/reset-password.html?token=${resetToken}`
 
-    console.log('🔗 Password reset URL:', resetUrl)  // keep for dev debugging
+    // Always log to console for debugging (visible in Render logs)
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.log('🔗 PASSWORD RESET LINK (for debugging):')
+    console.log(resetUrl)
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
-    // Send the actual email
+    // Try sending the email — AWAIT it so we catch real failures
     await sendPasswordResetEmail({
       name: user.name,
       email: user.email,
       resetUrl
     })
 
-    res.status(200).json({
+    // Only reaches here if email sent successfully
+    return res.status(200).json({
       success: true,
-      message: `Password reset link sent to ${user.email}. Check your inbox (and spam folder).`
+      message: `Reset link sent to ${user.email}. Please check your inbox and spam folder.`
     })
-  } catch (err) {
-    // If email sending fails, clear the reset token so user can try again
-    if (err.message?.includes('Email') || err.code === 'EAUTH' || err.code === 'ECONNREFUSED') {
-      try {
-        const user = await User.findOne({ email: req.body.email })
-        if (user) {
-          user.resetPasswordToken = undefined
-          user.resetPasswordExpire = undefined
-          await user.save({ validateBeforeSave: false })
-        }
-      } catch (e) {}
 
-      return res.status(500).json({
-        success: false,
-        message: 'Email could not be sent. Please check your SMTP settings in .env file.',
-        debug: process.env.NODE_ENV === 'development' ? err.message : undefined
-      })
+  } catch (err) {
+    // Email failed — clean up the reset token so user can try again
+    if (savedUser) {
+      try {
+        savedUser.resetPasswordToken = undefined
+        savedUser.resetPasswordExpire = undefined
+        await savedUser.save({ validateBeforeSave: false })
+      } catch (cleanupErr) {
+        console.error('Token cleanup failed:', cleanupErr.message)
+      }
     }
-    next(err)
+
+    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.error('❌ FORGOT PASSWORD ERROR:', err.message)
+    console.error('   Code:', err.code)
+    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+
+    // Give a clear error message based on what went wrong
+    let message = 'Failed to send email. '
+    if (err.code === 'EAUTH') {
+      message += 'Gmail authentication failed. Check SMTP_PASSWORD in your environment variables.'
+    } else if (err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT') {
+      message += 'Could not connect to email server. Check SMTP settings.'
+    } else if (!process.env.SMTP_EMAIL || process.env.SMTP_EMAIL.includes('your_gmail')) {
+      message += 'Email not configured. Set SMTP_EMAIL and SMTP_PASSWORD in environment variables.'
+    } else {
+      message += err.message
+    }
+
+    return res.status(500).json({
+      success: false,
+      message,
+      // Only show technical details in development
+      ...(process.env.NODE_ENV === 'development' && { debug: err.message, code: err.code })
+    })
   }
 }
 
-// ─── @desc    Reset password using token
+// ─── @desc    Reset password
 // ─── @route   PUT /api/auth/password/reset/:token
-// ─── @access  Public
 export const resetPassword = async (req, res, next) => {
   try {
-    // Hash the token from URL to compare with DB
     const resetPasswordToken = crypto
       .createHash('sha256')
       .update(req.params.token)
@@ -184,7 +196,7 @@ export const resetPassword = async (req, res, next) => {
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: 'Password reset token is invalid or has expired. Please request a new one.'
+        message: 'Reset link is invalid or has expired. Please request a new one.'
       })
     }
 
@@ -193,7 +205,8 @@ export const resetPassword = async (req, res, next) => {
     user.resetPasswordExpire = undefined
     await user.save()
 
-    sendToken(user, 200, res, 'Password reset successfully')
+    console.log(`✅ Password reset for: ${user.email}`)
+    sendToken(user, 200, res, 'Password reset successfully. You are now logged in.')
   } catch (err) {
     next(err)
   }
