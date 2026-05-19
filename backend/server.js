@@ -48,8 +48,6 @@ app.use(morgan("dev")) // logs: GET /api/users 200 12ms
 //     credentials: true
 // }));
 
-const app = express()
-
 app.set("trust proxy", 1)
 
 const allowedOrigins = [
