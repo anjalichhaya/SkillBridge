@@ -35,18 +35,51 @@ app.use(morgan("dev")) // logs: GET /api/users 200 12ms
 //         : process.env.FRONTEND_URL,
 //     credentials: true // allow cookies to be sent cross-origin
 // }))
-const allowedOrigins =
-    process.env.NODE_ENV === "development"
-        ? [
-            "http://127.0.0.1:5500",
-            "http://localhost:5500"
-        ]
-        : ["https://skillbridge-india26.netlify.app"];
+// const allowedOrigins =
+//     process.env.NODE_ENV === "development"
+//         ? [
+//             "http://127.0.0.1:5500",
+//             "http://localhost:5500"
+//         ]
+//         : ["https://skillbridge-india26.netlify.app"];
+
+// app.use(cors({
+//     origin: allowedOrigins,
+//     credentials: true
+// }));
+
+const app = express()
+
+app.set("trust proxy", 1)
+
+const allowedOrigins = [
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+    "https://skillbridge-india26.netlify.app"
+]
 
 app.use(cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+
+        // allow requests with no origin
+        if (!origin) return callback(null, true)
+
+        // allow localhost + production
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true)
+        }
+
+        // allow all netlify preview deploys
+        if (origin.endsWith(".netlify.app")) {
+            return callback(null, true)
+        }
+
+        return callback(new Error("Not allowed by CORS"))
+    },
     credentials: true
-}));
+}))
+
+app.options("*", cors())
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
