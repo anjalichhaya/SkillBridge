@@ -6,6 +6,9 @@ import helmet from "helmet"
 import morgan from "morgan"
 import cookieParser from "cookie-parser"
 import rateLimit from "express-rate-limit"
+import { verifyEmailConfig } from './utils/sendEmail.js'
+
+await verifyEmailConfig()
 
 // load .env
 // This MUST happen before anything else, so process.env.PORT etc. are available

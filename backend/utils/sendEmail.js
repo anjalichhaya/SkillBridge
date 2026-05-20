@@ -58,6 +58,18 @@ const isConfigured = () => {
 //     }
 //   })
 // }
+// const createTransporter = () => {
+//   return nodemailer.createTransport({
+//     host: 'smtp-relay.brevo.com',
+//     port: 465,
+//     secure: true,
+
+//     auth: {
+//       user: process.env.SMTP_EMAIL,
+//       pass: process.env.SMTP_PASSWORD
+//     }
+//   })
+// }
 const createTransporter = () => {
   return nodemailer.createTransport({
     host: 'smtp-relay.brevo.com',
@@ -67,7 +79,9 @@ const createTransporter = () => {
     auth: {
       user: process.env.SMTP_EMAIL,
       pass: process.env.SMTP_PASSWORD
-    }
+    },
+
+    family: 4
   })
 }
 
