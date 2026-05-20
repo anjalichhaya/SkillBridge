@@ -25,27 +25,37 @@ const isConfigured = () => {
 //     }
 //   })
 // }
+// const createTransporter = () => {
+//   return nodemailer.createTransport({
+//     host: 'smtp.gmail.com',
+//     port: 587,
+//     secure: false,
+//     family: 4,
+
+//     auth: {
+//       user: process.env.SMTP_EMAIL,
+//       pass: process.env.SMTP_PASSWORD
+//     },
+
+//     connectionTimeout: 10000,
+//     greetingTimeout: 10000,
+//     socketTimeout: 10000,
+
+//     tls: {
+//       rejectUnauthorized: false
+//     }
+//   })
+// }
 const createTransporter = () => {
   return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
     secure: false,
-    family: 4,
 
     auth: {
       user: process.env.SMTP_EMAIL,
       pass: process.env.SMTP_PASSWORD
-    },
-
-    tls: {
-      rejectUnauthorized: false
-    },
-
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 10000,
-    debug: true,
-    logger: true,
+    }
   })
 }
 
@@ -78,7 +88,20 @@ const sendEmail = async ({ to, subject, html, text }) => {
     return null
   }
 
-  const transporter = createTransporter()
+//   const transporter = createTransporter()
+// //   const info = await transporter.sendMail({
+// //     from: `"${process.env.FROM_NAME || 'SkillBridge India'}" <${process.env.SMTP_EMAIL}>`,
+// //     to,
+// //     subject,
+// //     html,
+// //     text: text || html.replace(/<[^>]*>/g, '')
+// //   })
+// console.log("📨 Attempting to send email...")
+const transporter = createTransporter()
+
+// try {
+//   console.log("📨 Attempting to send email...")
+
 //   const info = await transporter.sendMail({
 //     from: `"${process.env.FROM_NAME || 'SkillBridge India'}" <${process.env.SMTP_EMAIL}>`,
 //     to,
@@ -86,7 +109,17 @@ const sendEmail = async ({ to, subject, html, text }) => {
 //     html,
 //     text: text || html.replace(/<[^>]*>/g, '')
 //   })
-console.log("📨 Attempting to send email...")
+
+//   console.log("✅ Email successfully sent")
+//   console.log(info)
+
+//   return info
+
+// } catch (err) {
+//   console.error("❌ NODEMAILER ERROR:")
+//   console.error(err)
+//   throw err
+// }
 
 const info = await transporter.sendMail({
     from: `"${process.env.FROM_NAME || 'SkillBridge India'}" <${process.env.SMTP_EMAIL}>`,

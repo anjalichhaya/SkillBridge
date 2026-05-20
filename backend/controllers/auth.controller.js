@@ -129,11 +129,11 @@ export const forgotPassword = async (req, res, next) => {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
     // Try sending the email — AWAIT it so we catch real failures
-    // await sendPasswordResetEmail({
-    //   name: user.name,
-    //   email: user.email,
-    //   resetUrl
-    // })
+    await sendPasswordResetEmail({
+      name: user.name,
+      email: user.email,
+      resetUrl
+    })
 
     // Only reaches here if email sent successfully
     return res.status(200).json({
