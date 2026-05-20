@@ -46,16 +46,32 @@ const isConfigured = () => {
 //     }
 //   })
 // }
+// const createTransporter = () => {
+//   return nodemailer.createTransport({
+//     host: process.env.SMTP_HOST,
+//     port: process.env.SMTP_PORT,
+//     secure: false,
+
+//     auth: {
+//       user: process.env.SMTP_EMAIL,
+//       pass: process.env.SMTP_PASSWORD
+//     }
+//   })
+// }
 const createTransporter = () => {
   return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
+    host: 'smtp-relay.brevo.com',
+    port: 587,
     secure: false,
 
     auth: {
       user: process.env.SMTP_EMAIL,
       pass: process.env.SMTP_PASSWORD
-    }
+    },
+
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
   })
 }
 
@@ -97,43 +113,44 @@ const sendEmail = async ({ to, subject, html, text }) => {
 // //     text: text || html.replace(/<[^>]*>/g, '')
 // //   })
 // console.log("📨 Attempting to send email...")
-const transporter = createTransporter()
+    const transporter = createTransporter()
 
-// try {
-//   console.log("📨 Attempting to send email...")
+    try {
+    console.log("📨 Attempting to send email...")
 
-//   const info = await transporter.sendMail({
+    const info = await transporter.sendMail({
+        from: `"${process.env.FROM_NAME || 'SkillBridge India'}" <${process.env.SMTP_EMAIL}>`,
+        to,
+        subject,
+        html,
+        text: text || html.replace(/<[^>]*>/g, '')
+    })
+
+    console.log("✅ Email successfully sent")
+    console.log(info)
+
+    return info
+
+    } catch (err) {
+    console.error("❌ NODEMAILER ERROR:")
+    console.error(err)
+    throw err
+    }
+}
+
+// const info = await transporter.sendMail({
 //     from: `"${process.env.FROM_NAME || 'SkillBridge India'}" <${process.env.SMTP_EMAIL}>`,
 //     to,
 //     subject,
 //     html,
 //     text: text || html.replace(/<[^>]*>/g, '')
-//   })
+// })
 
-//   console.log("✅ Email successfully sent")
-//   console.log(info)
+// console.log("✅ Email successfully sent")
 
+//   console.log(`✅ Email sent → ${to} (${info.messageId})`)
 //   return info
-
-// } catch (err) {
-//   console.error("❌ NODEMAILER ERROR:")
-//   console.error(err)
-//   throw err
 // }
-
-const info = await transporter.sendMail({
-    from: `"${process.env.FROM_NAME || 'SkillBridge India'}" <${process.env.SMTP_EMAIL}>`,
-    to,
-    subject,
-    html,
-    text: text || html.replace(/<[^>]*>/g, '')
-})
-
-console.log("✅ Email successfully sent")
-
-  console.log(`✅ Email sent → ${to} (${info.messageId})`)
-  return info
-}
 
 // ── Email template wrapper ────────────────────────────────────────────────────
 const wrap = (body) => `<!DOCTYPE html>
