@@ -1,5 +1,8 @@
 import nodemailer from 'nodemailer'
 
+
+console.log("SMTP EMAIL:", process.env.SMTP_EMAIL)
+console.log("SMTP PASSWORD EXISTS:", !!process.env.SMTP_PASSWORD)
 // ── Is email configured? ──────────────────────────────────────────────────────
 const isConfigured = () => {
   return (
@@ -36,7 +39,13 @@ const createTransporter = () => {
 
     tls: {
       rejectUnauthorized: false
-    }
+    },
+
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
+    debug: true,
+    logger: true,
   })
 }
 
@@ -70,13 +79,24 @@ const sendEmail = async ({ to, subject, html, text }) => {
   }
 
   const transporter = createTransporter()
-  const info = await transporter.sendMail({
+//   const info = await transporter.sendMail({
+//     from: `"${process.env.FROM_NAME || 'SkillBridge India'}" <${process.env.SMTP_EMAIL}>`,
+//     to,
+//     subject,
+//     html,
+//     text: text || html.replace(/<[^>]*>/g, '')
+//   })
+console.log("📨 Attempting to send email...")
+
+const info = await transporter.sendMail({
     from: `"${process.env.FROM_NAME || 'SkillBridge India'}" <${process.env.SMTP_EMAIL}>`,
     to,
     subject,
     html,
     text: text || html.replace(/<[^>]*>/g, '')
-  })
+})
+
+console.log("✅ Email successfully sent")
 
   console.log(`✅ Email sent → ${to} (${info.messageId})`)
   return info
@@ -139,7 +159,7 @@ export const sendWelcomeEmail = async ({ name, email, role }) => {
     employer: 'Post jobs and connect with certified, skilled candidates.',
     admin: 'Your admin account is ready to manage the platform.'
   }
-  const frontendUrl = process.env.FRONTEND_URL || 'http://127.0.0.1:5500'
+  const frontendUrl = process.env.FRONTEND_URL || 'https://skillbridge-india26.netlify.app'
   const html = wrap(`
     <div class="title">Welcome to SkillBridge! 🎉</div>
     <p class="txt">Hi <strong>${name}</strong>, your account is ready.</p>
@@ -158,7 +178,7 @@ export const sendWelcomeEmail = async ({ name, email, role }) => {
 
 // ── 3. Certificate issued ─────────────────────────────────────────────────────
 export const sendCertificateEmail = async ({ name, email, courseName, certificateId }) => {
-  const frontendUrl = process.env.FRONTEND_URL || 'http://127.0.0.1:5500'
+  const frontendUrl = process.env.FRONTEND_URL || 'https://skillbridge-india26.netlify.app'
   const html = wrap(`
     <div class="title">Your certificate is ready! 🎓</div>
     <p class="txt">Congratulations <strong>${name}</strong>! You completed <strong>${courseName}</strong>.</p>

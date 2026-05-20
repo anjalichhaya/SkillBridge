@@ -119,7 +119,7 @@ export const forgotPassword = async (req, res, next) => {
     savedUser = user  // keep ref for cleanup if email fails
 
     // Build the reset URL
-    const frontendUrl = (process.env.FRONTEND_URL || 'http://127.0.0.1:5500').replace(/\/$/, '')
+    const frontendUrl = (process.env.FRONTEND_URL || 'https://skillbridge-india26.netlify.app').replace(/\/$/, '')
     const resetUrl = `${frontendUrl}/pages/reset-password.html?token=${resetToken}`
 
     // Always log to console for debugging (visible in Render logs)
@@ -129,11 +129,11 @@ export const forgotPassword = async (req, res, next) => {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
     // Try sending the email — AWAIT it so we catch real failures
-    await sendPasswordResetEmail({
-      name: user.name,
-      email: user.email,
-      resetUrl
-    })
+    // await sendPasswordResetEmail({
+    //   name: user.name,
+    //   email: user.email,
+    //   resetUrl
+    // })
 
     // Only reaches here if email sent successfully
     return res.status(200).json({
