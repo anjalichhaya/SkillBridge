@@ -31,7 +31,6 @@ SkillBridge India is built to solve the gap between **learning and employment** 
 | Database | MongoDB, Mongoose |
 | Authentication | JWT, bcrypt |
 | File Uploads | Multer |
-| Email Service | Nodemailer |
 | Deployment | Render (Backend), Netlify (Frontend) |
 
 ---
@@ -115,9 +114,7 @@ skillbridge-india/
 │ ├── utils/
 │ └── server.js
 ├── frontend/
-│ ├── assets/
-│ ├── css/
-│ ├── js/
+│ ├── index.html 
 │ └── pages/
 └── README.md
 ```
